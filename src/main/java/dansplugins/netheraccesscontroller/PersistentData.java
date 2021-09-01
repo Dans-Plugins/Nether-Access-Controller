@@ -41,12 +41,30 @@ public class PersistentData {
         return false;
     }
 
+    public boolean isPlayerAllowed(UUID playerUUID) {
+        for (UUID uuid : allowedPlayers) {
+            if (uuid.equals(playerUUID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setPlayerAllowed(Player player, boolean value) {
         if (value) {
             allowedPlayers.add(player.getUniqueId());
         }
         else {
             allowedPlayers.remove(player.getUniqueId());
+        }
+    }
+
+    public void setPlayerAllowed(UUID playerUUID, boolean value) {
+        if (value) {
+            allowedPlayers.add(playerUUID);
+        }
+        else {
+            allowedPlayers.remove(playerUUID);
         }
     }
 
