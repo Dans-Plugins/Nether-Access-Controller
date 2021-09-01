@@ -44,7 +44,7 @@ public class CommandInterpreter {
             }
 
             if (secondaryLabel.equalsIgnoreCase("config")) {
-                checkPermission(sender, "wp.config");
+                checkPermission(sender, "nac.config");
                 ConfigCommand command = new ConfigCommand();
                 return command.execute(sender, arguments);
             }
