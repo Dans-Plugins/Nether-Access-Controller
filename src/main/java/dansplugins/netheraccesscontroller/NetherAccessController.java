@@ -1,5 +1,6 @@
 package dansplugins.netheraccesscontroller;
 
+import dansplugins.netheraccesscontroller.bstats.Metrics;
 import dansplugins.netheraccesscontroller.managers.ConfigManager;
 import dansplugins.netheraccesscontroller.managers.StorageManager;
 import org.bukkit.command.Command;
@@ -36,11 +37,15 @@ public final class NetherAccessController extends JavaPlugin implements Listener
             reloadConfig();
         }
 
+        // register event handlers
+        EventRegistry.getInstance().registerEvents();
+
         // load save files
         StorageManager.getInstance().load();
 
-        // register event handlers
-        EventRegistry.getInstance().registerEvents();
+        // bStats
+        int pluginId = 12673;
+        Metrics metrics = new Metrics(this, pluginId);
     }
 
     @Override
