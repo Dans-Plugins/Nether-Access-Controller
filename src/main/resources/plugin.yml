@@ -1,4 +1,17 @@
 name: NetherAccessController
-version: ${project.version}
+version: 0.2
 main: dansplugins.netheraccesscontroller.NetherAccessController
 api-version: 1.13
+
+commands:
+  nac:
+
+permissions:
+  wac.help:
+    default: op
+  wac.list:
+    default: op
+  wac.allow:
+    default: op
+  wac.deny:
+    default: op

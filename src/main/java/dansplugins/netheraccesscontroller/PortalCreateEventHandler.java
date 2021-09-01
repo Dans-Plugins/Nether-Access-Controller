@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.PortalCreateEvent;
 
 public class PortalCreateEventHandler implements Listener {
+
     @EventHandler()
     public void handle(PortalCreateEvent event) {
         if (NetherAccessController.getInstance().isDebugEnabled()) {
@@ -26,4 +27,5 @@ public class PortalCreateEventHandler implements Listener {
             System.out.println("[DEBUG] " + event.getBlocks().size() + " blocks were used.");
         }
     }
+
 }
