@@ -1,0 +1,4 @@
+name: NetherAccessController
+version: ${project.version}
+main: dansplugins.netheraccesscontroller.NetherAccessController
+api-version: 1.13
