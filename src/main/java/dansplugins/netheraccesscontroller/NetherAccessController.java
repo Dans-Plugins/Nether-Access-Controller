@@ -1,9 +1,12 @@
 package dansplugins.netheraccesscontroller;
 
+import dansplugins.netheraccesscontroller.managers.ConfigManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 public final class NetherAccessController extends JavaPlugin implements Listener {
 
@@ -21,6 +24,18 @@ public final class NetherAccessController extends JavaPlugin implements Listener
     public void onEnable() {
         // set instance
         instance = this;
+
+        // create/load config
+        if (!(new File("./plugins/WildPets/config.yml").exists())) {
+            ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+        }
+        else {
+            // pre load compatibility checks
+            if (isVersionMismatched()) {
+                ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            }
+            reloadConfig();
+        }
 
         // register event handlers
         EventRegistry.getInstance().registerEvents();
