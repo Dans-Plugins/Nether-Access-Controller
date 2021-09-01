@@ -72,11 +72,11 @@ public class PersistentData {
         return saveMap;
     }
 
-    private void load(Map<String, String> data) {
+    public void load(Map<String, String> data) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        Type arrayListTypeString = new TypeToken<ArrayList<String>>(){}.getType();
+        Type arrayListTypeUUID = new TypeToken<ArrayList<UUID>>(){}.getType();
 
-        allowedPlayers = gson.fromJson(data.get("allowedPlayers"), arrayListTypeString);
+        allowedPlayers = gson.fromJson(data.get("allowedPlayers"), arrayListTypeUUID);
     }
 }

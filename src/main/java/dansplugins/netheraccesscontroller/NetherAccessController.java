@@ -1,6 +1,7 @@
 package dansplugins.netheraccesscontroller;
 
 import dansplugins.netheraccesscontroller.managers.ConfigManager;
+import dansplugins.netheraccesscontroller.managers.StorageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -35,13 +36,16 @@ public final class NetherAccessController extends JavaPlugin implements Listener
             reloadConfig();
         }
 
+        // load save files
+        StorageManager.getInstance().load();
+
         // register event handlers
         EventRegistry.getInstance().registerEvents();
     }
 
     @Override
     public void onDisable() {
-
+        StorageManager.getInstance().save();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

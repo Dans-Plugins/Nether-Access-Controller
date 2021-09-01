@@ -17,7 +17,7 @@ public class StorageManager {
     private static StorageManager instance;
 
     private final static String FILE_PATH = "./plugins/NetherAccessController/";
-    private final static String PETS_FILE_NAME = "allowedPlayers.json";
+    private final static String ALLOWED_PLAYERS_FILE_NAME = "allowedPlayers.json";
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
@@ -35,29 +35,28 @@ public class StorageManager {
     }
 
     public void save() {
-        savePets();
+        saveAllowedPlayers();
         if (ConfigManager.getInstance().hasBeenAltered()) {
             NetherAccessController.getInstance().saveConfig();
         }
     }
 
     public void load() {
-        loadPets();
+        loadAllowedPlayers();
     }
 
-    private void savePets() {
-        // save each pet object individually
-        List<Map<String, String>> pets = new ArrayList<>();
-        // pets = PersistentData.getInstance().save();
+    private void saveAllowedPlayers() {
+        List<Map<String, String>> allowedPlayers = new ArrayList<>();
+        allowedPlayers.add(PersistentData.getInstance().save());
 
-        writeOutFiles(pets);
+        writeOutFiles(allowedPlayers);
     }
 
     private void writeOutFiles(List<Map<String, String>> saveData) {
         try {
             File parentFolder = new File(FILE_PATH);
             parentFolder.mkdir();
-            File file = new File(FILE_PATH + PETS_FILE_NAME);
+            File file = new File(FILE_PATH + ALLOWED_PLAYERS_FILE_NAME);
             file.createNewFile();
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             outputStreamWriter.write(gson.toJson(saveData));
@@ -67,29 +66,21 @@ public class StorageManager {
         }
     }
 
-    private void loadPets() {
-/*
-        // load each pet individually and reconstruct pet list objects
-        PersistentData.getInstance().getPetLists().clear();
+    private void loadAllowedPlayers() {
 
-        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + PETS_FILE_NAME);
+        // PersistentData.getInstance().clear();
 
-        // ArrayList<Pet> allPets = new ArrayList<>();
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ALLOWED_PLAYERS_FILE_NAME);
 
-        for (Map<String, String> petData : data){
-            // Pet pet = new Pet(petData);
-            allPets.add(pet);
+        if (data.size() > 0) {
+            PersistentData.getInstance().load(data.get(0));
         }
-
-        for (Pet pet : allPets) {
-            if (PersistentData.getInstance().getPetList(pet.getOwnerUUID()) == null) {
-                PersistentData.getInstance().createPetListForPlayer(pet.getOwnerUUID());
-
+        else {
+            if (NetherAccessController.getInstance().isDebugEnabled()) {
+                System.out.println("[DEBUG] No save files found!");
             }
-            PersistentData.getInstance().getPetList(pet.getOwnerUUID()).addPet(pet);
         }
 
-*/
     }
 
     private ArrayList<HashMap<String, String>> loadDataFromFilename(String filename) {
