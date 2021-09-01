@@ -43,7 +43,7 @@ public class ConfigManager {
             getConfig().set("debugMode", false);
         }
         if (!getConfig().isSet("denyMessage")) {
-            getConfig().set("denyMessage", "You're unable to use portals. You need to be more skilled at Conjuration.");
+            getConfig().set("denyMessage", "You're unable to use portals.");
         }
         if (!getConfig().isSet("allowPlayersToPortalToOverworld")) {
             getConfig().set("allowPlayersToPortalToOverworld", true);
