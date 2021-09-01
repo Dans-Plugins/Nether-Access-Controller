@@ -1,9 +1,6 @@
 package dansplugins.netheraccesscontroller;
 
-import dansplugins.netheraccesscontroller.commands.AllowCommand;
-import dansplugins.netheraccesscontroller.commands.DenyCommand;
-import dansplugins.netheraccesscontroller.commands.HelpCommand;
-import dansplugins.netheraccesscontroller.commands.ListCommand;
+import dansplugins.netheraccesscontroller.commands.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -43,6 +40,12 @@ public class CommandInterpreter {
             if (secondaryLabel.equalsIgnoreCase("deny")) {
                 if (!checkPermission(sender, "nac.deny")) { return false; }
                 DenyCommand command = new DenyCommand();
+                return command.execute(sender, arguments);
+            }
+
+            if (secondaryLabel.equalsIgnoreCase("config")) {
+                checkPermission(sender, "wp.config");
+                ConfigCommand command = new ConfigCommand();
                 return command.execute(sender, arguments);
             }
 

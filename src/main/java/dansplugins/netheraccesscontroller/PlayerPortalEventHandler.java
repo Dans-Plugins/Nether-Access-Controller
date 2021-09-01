@@ -13,7 +13,7 @@ public class PlayerPortalEventHandler implements Listener {
             System.out.println("[DEBUG] " + event.getPlayer().getName() + " is using a portal.");
         }
         if (!PersistentData.getInstance().isPlayerAllowed(event.getPlayer())) {
-            event.getPlayer().sendMessage(event.getPlayer().getName() + " is not allowed through nether portals.");
+            event.getPlayer().sendMessage();
             event.setCancelled(true);
         }
     }

@@ -15,7 +15,7 @@ public final class NetherAccessController extends JavaPlugin implements Listener
 
     private final boolean debug = true;
 
-    private final String version = "v0.3";
+    private final String version = "v0.4";
 
     @Override
     public void onEnable() {
