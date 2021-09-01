@@ -18,7 +18,7 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         return instance;
     }
 
-    private final String version = "v0.6";
+    private final String version = "v0.5";
 
     @Override
     public void onEnable() {
