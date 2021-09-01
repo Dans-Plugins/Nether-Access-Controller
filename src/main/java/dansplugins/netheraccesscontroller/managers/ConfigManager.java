@@ -5,9 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /*
     To add a new config option, the following methods must be altered:
     - handleVersionMismatch()
@@ -48,6 +45,9 @@ public class ConfigManager {
         if (!getConfig().isSet("denyMessage")) {
             getConfig().set("denyMessage", "You're unable to use portals. You need to be more skilled at Conjuration.");
         }
+        if (!getConfig().isSet("allowPlayersToPortalToOverworld")) {
+            getConfig().set("allowPlayersToPortalToOverworld", true);
+        }
         getConfig().options().copyDefaults(true);
         NetherAccessController.getInstance().saveConfig();
     }
@@ -62,7 +62,8 @@ public class ConfigManager {
             } else if (option.equalsIgnoreCase("a")) {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
-            } else if (option.equalsIgnoreCase("debugMode")) {
+            } else if (option.equalsIgnoreCase("debugMode")
+                    || option.equalsIgnoreCase("allowPlayersToPortalToOverworld")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("c")) { // no doubles yet
@@ -85,7 +86,7 @@ public class ConfigManager {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
                 + ", debugMode: " + getString("debugMode")
-                + ", denyMessage: " + getString("denyMessage"));
+                + ", denyMessage: '" + getString("denyMessage") + "'");
     }
 
     public boolean hasBeenAltered() {

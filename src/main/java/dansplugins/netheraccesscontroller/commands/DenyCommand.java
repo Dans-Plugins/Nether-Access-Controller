@@ -26,6 +26,7 @@ public class DenyCommand {
         }
 
         PersistentData.getInstance().setPlayerAllowed(player, false);
+        sender.sendMessage(ChatColor.GREEN + player.getName() + " is no longer allowed to use nether portals.");
         return true;
     }
 

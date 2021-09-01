@@ -26,7 +26,7 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         instance = this;
 
         // create/load config
-        if (!(new File("./plugins/WildPets/config.yml").exists())) {
+        if (!(new File("./plugins/NetherAccessController/config.yml").exists())) {
             ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
         }
         else {
@@ -56,7 +56,7 @@ public final class NetherAccessController extends JavaPlugin implements Listener
     }
 
     public boolean isDebugEnabled() {
-        return debug;
+        return getConfig().getBoolean("debugMode");
     }
 
     private boolean isVersionMismatched() {
