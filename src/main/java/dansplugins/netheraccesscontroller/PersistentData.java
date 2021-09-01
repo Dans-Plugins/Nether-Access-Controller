@@ -1,6 +1,7 @@
 package dansplugins.netheraccesscontroller;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -43,9 +44,15 @@ public class PersistentData {
     }
 
     public void sendListToSender(CommandSender sender) {
-        for (UUID uuid : allowedPlayers) {
-            OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-            sender.sendMessage(player.getName());
+        if (allowedPlayers.size() > 0) {
+            sender.sendMessage(ChatColor.AQUA + "=== Players With Access To The Nether ==");
+            for (UUID uuid : allowedPlayers) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+                sender.sendMessage(ChatColor.AQUA + player.getName());
+            }
+        }
+        else {
+            sender.sendMessage(ChatColor.AQUA + "No one is allowed to access the nether.");
         }
     }
 }

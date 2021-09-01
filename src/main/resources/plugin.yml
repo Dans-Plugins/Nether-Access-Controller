@@ -1,5 +1,5 @@
 name: NetherAccessController
-version: 0.2
+version: 0.3
 main: dansplugins.netheraccesscontroller.NetherAccessController
 api-version: 1.13
 

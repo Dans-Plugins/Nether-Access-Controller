@@ -15,7 +15,7 @@ public class CommandInterpreter {
             if (args.length == 0) {
                 sender.sendMessage(ChatColor.AQUA + "Nether Access Controller " + NetherAccessController.getInstance().getVersion());
                 sender.sendMessage(ChatColor.AQUA + "Developer: DanTheTechMan");
-                sender.sendMessage(ChatColor.AQUA + "Wiki: https://github.com/dmccoystephenson/Wild-Pets/wiki");
+                sender.sendMessage(ChatColor.AQUA + "Wiki: https://github.com/dmccoystephenson/Nether-Access-Controller/wiki");
                 return false;
             }
 
