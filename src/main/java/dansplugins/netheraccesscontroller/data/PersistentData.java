@@ -1,4 +1,4 @@
-package dansplugins.netheraccesscontroller;
+package dansplugins.netheraccesscontroller.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

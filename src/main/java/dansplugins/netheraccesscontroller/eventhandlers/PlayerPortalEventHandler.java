@@ -1,7 +1,7 @@
 package dansplugins.netheraccesscontroller.eventhandlers;
 
 import dansplugins.netheraccesscontroller.NetherAccessController;
-import dansplugins.netheraccesscontroller.PersistentData;
+import dansplugins.netheraccesscontroller.data.PersistentData;
 import dansplugins.netheraccesscontroller.managers.ConfigManager;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;

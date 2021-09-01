@@ -1,6 +1,6 @@
 package dansplugins.netheraccesscontroller.commands;
 
-import dansplugins.netheraccesscontroller.PersistentData;
+import dansplugins.netheraccesscontroller.data.PersistentData;
 import org.bukkit.command.CommandSender;
 
 public class ListCommand {

@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import dansplugins.netheraccesscontroller.NetherAccessController;
-import dansplugins.netheraccesscontroller.PersistentData;
+import dansplugins.netheraccesscontroller.data.PersistentData;
 
 import java.io.*;
 import java.lang.reflect.Type;

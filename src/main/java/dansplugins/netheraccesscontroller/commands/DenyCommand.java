@@ -1,12 +1,11 @@
 package dansplugins.netheraccesscontroller.commands;
 
-import dansplugins.netheraccesscontroller.PersistentData;
+import dansplugins.netheraccesscontroller.data.PersistentData;
 import dansplugins.netheraccesscontroller.utils.UUIDChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
