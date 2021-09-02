@@ -18,6 +18,9 @@ public class PlayerPortalEventHandler implements Listener {
             System.out.println("[DEBUG] " + event.getPlayer().getName() + " is using a portal.");
         }
 
+        if (!ConfigManager.getInstance().getBoolean("preventPortalUsage")) {
+            return;
+        }
 
         if (!event.getCause().equals(PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
             return;
