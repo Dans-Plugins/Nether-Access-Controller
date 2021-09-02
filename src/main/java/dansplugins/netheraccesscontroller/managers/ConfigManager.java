@@ -45,9 +45,6 @@ public class ConfigManager {
         if (!getConfig().isSet("denyMessage")) {
             getConfig().set("denyMessage", "You're unable to use portals.");
         }
-        if (!getConfig().isSet("allowPlayersToPortalToOverworld")) {
-            getConfig().set("allowPlayersToPortalToOverworld", true);
-        }
         if (!getConfig().isSet("preventPortalUsage")) {
             getConfig().set("preventPortalUsage", true);
         }
