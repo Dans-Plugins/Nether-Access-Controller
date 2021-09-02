@@ -6,7 +6,7 @@
 
     <groupId>dansplugins</groupId>
     <artifactId>NetherAccessController</artifactId>
-    <version>v1.0-alpha-1</version>
+    <version>v1.0</version>
     <packaging>jar</packaging>
 
     <name>NetherAccessController</name>
