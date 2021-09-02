@@ -48,6 +48,9 @@ public class ConfigManager {
         if (!getConfig().isSet("allowPlayersToPortalToOverworld")) {
             getConfig().set("allowPlayersToPortalToOverworld", true);
         }
+        if (!getConfig().isSet("preventPortalUsage")) {
+            getConfig().set("preventPortalUsage", true);
+        }
         if (!getConfig().isSet("preventPortalCreation")) {
             getConfig().set("preventPortalCreation", true);
         }
@@ -66,7 +69,7 @@ public class ConfigManager {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
             } else if (option.equalsIgnoreCase("debugMode")
-                    || option.equalsIgnoreCase("allowPlayersToPortalToOverworld")
+                    || option.equalsIgnoreCase("preventPortalUsage")
                     || option.equalsIgnoreCase("preventPortalCreation")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
@@ -91,6 +94,7 @@ public class ConfigManager {
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
                 + ", debugMode: " + getString("debugMode")
                 + ", denyMessage: '" + getString("denyMessage") + "'"
+                + ", preventPortalUsage: " + getBoolean("preventPortalUsage")
                 + ", preventPortalCreation: " + getBoolean("preventPortalCreation"));
     }
 
