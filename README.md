@@ -1,7 +1,7 @@
 # Nether Access Controller
 
 ## Description
-Nether Access Controller is a plugin that allows operators to control access to the nether. It is essentially a whitelist for nether access. Operators can allow or deny access and view who has access. Both nether portal creation and usage can be prevented through the use of this tool.
+Nether Access Controller is a Minecraft plugin that allows operators to control access to the nether. It is essentially a whitelist for nether access. Operators can allow or deny access and view who has access. Both nether portal creation and usage can be prevented through the use of this tool.
 
 ## Installation
 1) You can download the plugin from [this page](https://www.spigotmc.org/resources/nether-access-controller.95905/).
