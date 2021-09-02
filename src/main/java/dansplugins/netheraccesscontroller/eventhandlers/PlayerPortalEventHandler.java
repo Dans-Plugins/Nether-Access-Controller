@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerPortalEventHandler implements Listener {
 
@@ -15,6 +16,11 @@ public class PlayerPortalEventHandler implements Listener {
         if (NetherAccessController.getInstance().isDebugEnabled()) {
             System.out.println("[DEBUG] PlayerPortalEvent is firing.");
             System.out.println("[DEBUG] " + event.getPlayer().getName() + " is using a portal.");
+        }
+
+
+        if (!event.getCause().equals(PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
+            return;
         }
 
         if (!PersistentData.getInstance().isPlayerAllowed(event.getPlayer())) {
