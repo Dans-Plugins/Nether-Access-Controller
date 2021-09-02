@@ -1,5 +1,6 @@
 package dansplugins.netheraccesscontroller;
 
+import dansplugins.netheraccesscontroller.eventhandlers.InteractionHandler;
 import dansplugins.netheraccesscontroller.eventhandlers.PlayerPortalEventHandler;
 import dansplugins.netheraccesscontroller.eventhandlers.PortalCreateEventHandler;
 import org.bukkit.plugin.PluginManager;
@@ -27,6 +28,7 @@ public class EventRegistry {
         // event handlers
         manager.registerEvents(new PlayerPortalEventHandler(), mainInstance);
         manager.registerEvents(new PortalCreateEventHandler(), mainInstance);
+        manager.registerEvents(new InteractionHandler(), mainInstance);
     }
 
 }

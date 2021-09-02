@@ -48,6 +48,9 @@ public class ConfigManager {
         if (!getConfig().isSet("allowPlayersToPortalToOverworld")) {
             getConfig().set("allowPlayersToPortalToOverworld", true);
         }
+        if (!getConfig().isSet("preventPortalCreation")) {
+            getConfig().set("preventPortalCreation", true);
+        }
         getConfig().options().copyDefaults(true);
         NetherAccessController.getInstance().saveConfig();
     }
@@ -63,7 +66,8 @@ public class ConfigManager {
                 getConfig().set(option, Integer.parseInt(value));
                 sender.sendMessage(ChatColor.GREEN + "Integer set.");
             } else if (option.equalsIgnoreCase("debugMode")
-                    || option.equalsIgnoreCase("allowPlayersToPortalToOverworld")) {
+                    || option.equalsIgnoreCase("allowPlayersToPortalToOverworld")
+                    || option.equalsIgnoreCase("preventPortalCreation")) {
                 getConfig().set(option, Boolean.parseBoolean(value));
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
             } else if (option.equalsIgnoreCase("c")) { // no doubles yet
@@ -86,7 +90,8 @@ public class ConfigManager {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
                 + ", debugMode: " + getString("debugMode")
-                + ", denyMessage: '" + getString("denyMessage") + "'");
+                + ", denyMessage: '" + getString("denyMessage") + "'"
+                + ", preventPortalCreation: " + getBoolean("preventPortalCreation"));
     }
 
     public boolean hasBeenAltered() {

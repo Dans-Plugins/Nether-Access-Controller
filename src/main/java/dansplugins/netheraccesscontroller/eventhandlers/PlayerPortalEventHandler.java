@@ -16,6 +16,7 @@ public class PlayerPortalEventHandler implements Listener {
             System.out.println("[DEBUG] PlayerPortalEvent is firing.");
             System.out.println("[DEBUG] " + event.getPlayer().getName() + " is using a portal.");
         }
+
         if (!PersistentData.getInstance().isPlayerAllowed(event.getPlayer())) {
             event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyMessage"));
             event.setCancelled(true);
