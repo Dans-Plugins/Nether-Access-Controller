@@ -4,3 +4,4 @@
 - 0.3 - Command Improvements
 - 0.4 - Config.yml
 - 0.5 - Persistence, bStats
+- 1.0 - (tbd)
