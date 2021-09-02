@@ -44,12 +44,10 @@ public class InteractionHandler implements Listener {
 
         if (PersistentData.getInstance().isPlayerAllowed(event.getPlayer())) {
             event.getPlayer().sendMessage(ChatColor.GREEN + "You light the portal.");
-            return;
         }
         else {
             event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyMessage"));
             event.setCancelled(true);
-            return;
         }
 
     }
