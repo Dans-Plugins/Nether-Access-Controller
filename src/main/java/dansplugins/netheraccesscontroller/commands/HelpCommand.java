@@ -11,6 +11,7 @@ public class HelpCommand {
         sender.sendMessage(ChatColor.AQUA + "/nac list - List players who are allowed to access the nether.");
         sender.sendMessage(ChatColor.AQUA + "/nac allow - Allow a player to access the nether.");
         sender.sendMessage(ChatColor.AQUA + "/nac deny - Disallow a player from accessing the nether.");
+        sender.sendMessage(ChatColor.AQUA + "/nac config - View or set config options.");
         return true;
     }
 
