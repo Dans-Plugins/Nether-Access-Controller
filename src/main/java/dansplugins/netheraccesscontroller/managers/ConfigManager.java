@@ -46,7 +46,7 @@ public class ConfigManager {
             getConfig().set("denyMessage", "You're unable to use portals.");
         }
         if (!getConfig().isSet("preventPortalUsage")) {
-            getConfig().set("preventPortalUsage", true);
+            getConfig().set("preventPortalUsage", false);
         }
         if (!getConfig().isSet("preventPortalCreation")) {
             getConfig().set("preventPortalCreation", true);
