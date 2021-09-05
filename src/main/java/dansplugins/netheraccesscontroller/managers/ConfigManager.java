@@ -42,8 +42,11 @@ public class ConfigManager {
         if (!getConfig().isSet("debugMode")) {
             getConfig().set("debugMode", false);
         }
-        if (!getConfig().isSet("denyMessage")) {
-            getConfig().set("denyMessage", "You're unable to use portals.");
+        if (!getConfig().isSet("denyUsageMessage")) {
+            getConfig().set("denyUsageMessage", "You're unable to use nether portals.");
+        }
+        if (!getConfig().isSet("denyCreationMessage")) {
+            getConfig().set("denyUsageMessage", "You're unable to create nether portals.");
         }
         if (!getConfig().isSet("preventPortalUsage")) {
             getConfig().set("preventPortalUsage", false);
@@ -90,9 +93,10 @@ public class ConfigManager {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
                 + ", debugMode: " + getString("debugMode")
-                + ", denyMessage: '" + getString("denyMessage") + "'"
                 + ", preventPortalUsage: " + getBoolean("preventPortalUsage")
-                + ", preventPortalCreation: " + getBoolean("preventPortalCreation"));
+                + ", preventPortalCreation: " + getBoolean("preventPortalCreation")
+                + ", denyUsageMessage: '" + getString("denyUsageMessage") + "'"
+                + ", denyCreationMessage: '" + getString("denyCreationMessage") + "'");
     }
 
     public boolean hasBeenAltered() {
