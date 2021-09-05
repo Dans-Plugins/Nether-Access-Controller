@@ -46,7 +46,7 @@ public class ConfigManager {
             getConfig().set("denyUsageMessage", "You're unable to use nether portals.");
         }
         if (!getConfig().isSet("denyCreationMessage")) {
-            getConfig().set("denyUsageMessage", "You're unable to create nether portals.");
+            getConfig().set("denyCreationMessage", "You're unable to create nether portals.");
         }
         if (!getConfig().isSet("preventPortalUsage")) {
             getConfig().set("preventPortalUsage", false);
