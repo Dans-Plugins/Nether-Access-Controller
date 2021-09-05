@@ -13,7 +13,7 @@ public class DenyCommand {
 
     public boolean execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /nac allow (playerName)");
+            sender.sendMessage(ChatColor.RED + "Usage: /nac deny (playerName)");
             return false;
         }
         String playerName = args[0];
