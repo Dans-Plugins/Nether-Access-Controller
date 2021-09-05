@@ -46,7 +46,7 @@ public class InteractionHandler implements Listener {
             event.getPlayer().sendMessage(ChatColor.GREEN + "You light the portal.");
         }
         else {
-            event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyMessage"));
+            event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyCreationMessage"));
             event.setCancelled(true);
         }
 

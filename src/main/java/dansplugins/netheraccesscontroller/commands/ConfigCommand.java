@@ -27,10 +27,10 @@ public class ConfigCommand {
             String option = args[1];
 
             String value = "";
-            if (option.equalsIgnoreCase("denyMessage")) {
+            if (option.equalsIgnoreCase("denyUsageMessage") || option.equalsIgnoreCase("denyCreationMessage")) {
                 ArrayList<String> singleQuoteArgs = ArgumentParser.getInstance().getArgumentsInsideSingleQuotes(args);
                 if (singleQuoteArgs.size() == 0) {
-                    sender.sendMessage(ChatColor.RED + "New deny message must be in between single quotes.");
+                    sender.sendMessage(ChatColor.RED + "New message must be in between single quotes.");
                     return false;
                 }
                 value = singleQuoteArgs.get(0);

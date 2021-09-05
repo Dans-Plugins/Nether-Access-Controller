@@ -27,7 +27,7 @@ public class PlayerPortalEventHandler implements Listener {
         }
 
         if (!PersistentData.getInstance().isPlayerAllowed(event.getPlayer())) {
-            event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyMessage"));
+            event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyUsageMessage"));
             event.setCancelled(true);
             return;
         }
