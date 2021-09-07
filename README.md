@@ -24,7 +24,7 @@ Please fill out a bug report [here](https://github.com/dmccoystephenson/Nether-A
 ## Roadmap
 - [Known Bugs](https://github.com/dmccoystephenson/Nether-Access-Controller/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
 - [Planned Features](https://github.com/dmccoystephenson/Nether-Access-Controller/issues?q=is%3Aopen+is%3Aissue+label%3AEpic)
-- [Planned Improvements](https://github.com/dmccoystephenson/WNether-Access-Controller/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement)
+- [Planned Improvements](https://github.com/dmccoystephenson/Nether-Access-Controller/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement)
 
 ## Contributing
 - [Notes for Developers (coming soon)](https://github.com/dmccoystephenson/Nether-Access-Controller/wiki/Developer-Notes)
