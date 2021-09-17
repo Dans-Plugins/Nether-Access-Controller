@@ -7,9 +7,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 /*
     To add a new config option, the following methods must be altered:
-    - handleVersionMismatch()
+    - saveMissingConfigDefaultsIfNotPresent
     - setConfigOption()
-    - saveConfigDefaults()
     - sendConfigList()
  */
 
