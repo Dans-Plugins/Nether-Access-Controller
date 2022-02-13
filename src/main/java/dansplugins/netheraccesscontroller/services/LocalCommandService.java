@@ -1,10 +1,11 @@
-package dansplugins.netheraccesscontroller;
+package dansplugins.netheraccesscontroller.services;
 
+import dansplugins.netheraccesscontroller.NetherAccessController;
 import dansplugins.netheraccesscontroller.commands.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class CommandInterpreter {
+public class LocalCommandService {
 
     public boolean interpretCommand(CommandSender sender, String label, String[] args) {
         if (label.equalsIgnoreCase("NetherAccessController") || label.equalsIgnoreCase("nac")) {

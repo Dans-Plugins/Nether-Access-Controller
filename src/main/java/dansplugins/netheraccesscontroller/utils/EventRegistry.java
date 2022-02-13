@@ -1,5 +1,6 @@
-package dansplugins.netheraccesscontroller;
+package dansplugins.netheraccesscontroller.utils;
 
+import dansplugins.netheraccesscontroller.NetherAccessController;
 import dansplugins.netheraccesscontroller.eventhandlers.InteractionHandler;
 import dansplugins.netheraccesscontroller.eventhandlers.PlayerPortalEventHandler;
 import org.bukkit.plugin.PluginManager;

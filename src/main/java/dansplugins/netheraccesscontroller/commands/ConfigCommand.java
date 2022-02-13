@@ -1,6 +1,6 @@
 package dansplugins.netheraccesscontroller.commands;
 
-import dansplugins.netheraccesscontroller.managers.ConfigManager;
+import dansplugins.netheraccesscontroller.services.LocalConfigService;
 import dansplugins.netheraccesscontroller.utils.ArgumentParser;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,7 @@ public class ConfigCommand {
         }
 
         if (args[0].equalsIgnoreCase("show")) {
-            ConfigManager.getInstance().sendConfigList(sender);
+            LocalConfigService.getInstance().sendConfigList(sender);
             return true;
         }
         else if (args[0].equalsIgnoreCase("set")) {
@@ -39,7 +39,7 @@ public class ConfigCommand {
                 value = args[2];
             }
 
-            ConfigManager.getInstance().setConfigOption(option, value, sender);
+            LocalConfigService.getInstance().setConfigOption(option, value, sender);
             return true;
         }
         else {

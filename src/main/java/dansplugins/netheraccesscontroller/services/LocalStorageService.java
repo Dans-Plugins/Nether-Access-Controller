@@ -1,4 +1,4 @@
-package dansplugins.netheraccesscontroller.managers;
+package dansplugins.netheraccesscontroller.services;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,9 +12,9 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class StorageManager {
+public class LocalStorageService {
 
-    private static StorageManager instance;
+    private static LocalStorageService instance;
 
     private final static String FILE_PATH = "./plugins/NetherAccessController/";
     private final static String ALLOWED_PLAYERS_FILE_NAME = "allowedPlayers.json";
@@ -23,20 +23,20 @@ public class StorageManager {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
 
-    private StorageManager() {
+    private LocalStorageService() {
 
     }
 
-    public static StorageManager getInstance() {
+    public static LocalStorageService getInstance() {
         if (instance == null) {
-            instance = new StorageManager();
+            instance = new LocalStorageService();
         }
         return instance;
     }
 
     public void save() {
         saveAllowedPlayers();
-        if (ConfigManager.getInstance().hasBeenAltered()) {
+        if (LocalConfigService.getInstance().hasBeenAltered()) {
             NetherAccessController.getInstance().saveConfig();
         }
     }

@@ -1,8 +1,10 @@
 package dansplugins.netheraccesscontroller;
 
 import dansplugins.netheraccesscontroller.bstats.Metrics;
-import dansplugins.netheraccesscontroller.managers.ConfigManager;
-import dansplugins.netheraccesscontroller.managers.StorageManager;
+import dansplugins.netheraccesscontroller.services.LocalCommandService;
+import dansplugins.netheraccesscontroller.services.LocalConfigService;
+import dansplugins.netheraccesscontroller.services.LocalStorageService;
+import dansplugins.netheraccesscontroller.utils.EventRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -27,12 +29,12 @@ public final class NetherAccessController extends JavaPlugin implements Listener
 
         // create/load config
         if (!(new File("./plugins/NetherAccessController/config.yml").exists())) {
-            ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
         }
         else {
             // pre load compatibility checks
             if (isVersionMismatched()) {
-                ConfigManager.getInstance().saveMissingConfigDefaultsIfNotPresent();
+                LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
             }
             reloadConfig();
         }
@@ -41,7 +43,7 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         EventRegistry.getInstance().registerEvents();
 
         // load save files
-        StorageManager.getInstance().load();
+        LocalStorageService.getInstance().load();
 
         // bStats
         int pluginId = 12673;
@@ -50,12 +52,12 @@ public final class NetherAccessController extends JavaPlugin implements Listener
 
     @Override
     public void onDisable() {
-        StorageManager.getInstance().save();
+        LocalStorageService.getInstance().save();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        CommandInterpreter commandInterpreter = new CommandInterpreter();
-        return commandInterpreter.interpretCommand(sender, label, args);
+        LocalCommandService localCommandService = new LocalCommandService();
+        return localCommandService.interpretCommand(sender, label, args);
     }
 
     public String getVersion() {

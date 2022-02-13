@@ -2,7 +2,7 @@ package dansplugins.netheraccesscontroller.eventhandlers;
 
 import dansplugins.netheraccesscontroller.NetherAccessController;
 import dansplugins.netheraccesscontroller.data.PersistentData;
-import dansplugins.netheraccesscontroller.managers.ConfigManager;
+import dansplugins.netheraccesscontroller.services.LocalConfigService;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,7 +21,7 @@ public class InteractionHandler implements Listener {
             System.out.println("[DEBUG] " + event.getPlayer().getName() + " is interacting.");
         }
 
-        if (!ConfigManager.getInstance().getBoolean("preventPortalCreation")) {
+        if (!LocalConfigService.getInstance().getBoolean("preventPortalCreation")) {
             return;
         }
 
@@ -46,7 +46,7 @@ public class InteractionHandler implements Listener {
             event.getPlayer().sendMessage(ChatColor.GREEN + "You light the portal.");
         }
         else {
-            event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyCreationMessage"));
+            event.getPlayer().sendMessage(ChatColor.RED + LocalConfigService.getInstance().getString("denyCreationMessage"));
             event.setCancelled(true);
         }
 

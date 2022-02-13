@@ -1,4 +1,4 @@
-package dansplugins.netheraccesscontroller.managers;
+package dansplugins.netheraccesscontroller.services;
 
 import dansplugins.netheraccesscontroller.NetherAccessController;
 import org.bukkit.ChatColor;
@@ -12,18 +12,18 @@ import org.bukkit.configuration.file.FileConfiguration;
     - sendConfigList()
  */
 
-public class ConfigManager {
+public class LocalConfigService {
 
-    private static ConfigManager instance;
+    private static LocalConfigService instance;
     private boolean altered = false;
 
-    private ConfigManager() {
+    private LocalConfigService() {
 
     }
 
-    public static ConfigManager getInstance() {
+    public static LocalConfigService getInstance() {
         if (instance == null) {
-            instance = new ConfigManager();
+            instance = new LocalConfigService();
         }
         return instance;
     }

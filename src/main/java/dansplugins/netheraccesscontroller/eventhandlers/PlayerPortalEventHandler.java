@@ -2,7 +2,7 @@ package dansplugins.netheraccesscontroller.eventhandlers;
 
 import dansplugins.netheraccesscontroller.NetherAccessController;
 import dansplugins.netheraccesscontroller.data.PersistentData;
-import dansplugins.netheraccesscontroller.managers.ConfigManager;
+import dansplugins.netheraccesscontroller.services.LocalConfigService;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +18,7 @@ public class PlayerPortalEventHandler implements Listener {
             System.out.println("[DEBUG] " + event.getPlayer().getName() + " is using a portal.");
         }
 
-        if (!ConfigManager.getInstance().getBoolean("preventPortalUsage")) {
+        if (!LocalConfigService.getInstance().getBoolean("preventPortalUsage")) {
             return;
         }
 
@@ -27,7 +27,7 @@ public class PlayerPortalEventHandler implements Listener {
         }
 
         if (!PersistentData.getInstance().isPlayerAllowed(event.getPlayer())) {
-            event.getPlayer().sendMessage(ChatColor.RED + ConfigManager.getInstance().getString("denyUsageMessage"));
+            event.getPlayer().sendMessage(ChatColor.RED + LocalConfigService.getInstance().getString("denyUsageMessage"));
             event.setCancelled(true);
             return;
         }
