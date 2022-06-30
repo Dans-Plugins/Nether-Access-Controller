@@ -10,6 +10,13 @@ import org.bukkit.command.CommandSender;
 import java.util.UUID;
 
 public class DenyCommand {
+    private final UUIDChecker uuidChecker;
+    private final PersistentData persistentData;
+
+    public DenyCommand(UUIDChecker uuidChecker, PersistentData persistentData) {
+        this.uuidChecker = uuidChecker;
+        this.persistentData = persistentData;
+    }
 
     public boolean execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
@@ -17,7 +24,7 @@ public class DenyCommand {
             return false;
         }
         String playerName = args[0];
-        UUID uuid = UUIDChecker.getInstance().findUUIDBasedOnPlayerName(playerName);
+        UUID uuid = uuidChecker.findUUIDBasedOnPlayerName(playerName);
 
         if (uuid == null) {
             sender.sendMessage(ChatColor.RED + "That player wasn't found.");
@@ -26,12 +33,12 @@ public class DenyCommand {
 
         OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 
-        if (!PersistentData.getInstance().isPlayerAllowed(uuid)) {
+        if (!persistentData.isPlayerAllowed(uuid)) {
             sender.sendMessage(ChatColor.RED + player.getName() + " is already not allowed to use nether portals.");
             return false;
         }
 
-        PersistentData.getInstance().setPlayerAllowed(uuid, false);
+        persistentData.setPlayerAllowed(uuid, false);
         sender.sendMessage(ChatColor.GREEN + player.getName() + " is no longer allowed to use nether portals.");
         return true;
     }

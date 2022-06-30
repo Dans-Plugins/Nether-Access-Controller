@@ -4,19 +4,6 @@ import java.util.ArrayList;
 
 public class ArgumentParser {
 
-    private static ArgumentParser instance;
-
-    private ArgumentParser() {
-
-    }
-
-    public static ArgumentParser getInstance() {
-        if (instance == null) {
-            instance = new ArgumentParser();
-        }
-        return instance;
-    }
-
     public ArrayList<String> getArgumentsInsideSingleQuotes(String[] args) {
         ArrayList<String> toReturn = new ArrayList<>();
 

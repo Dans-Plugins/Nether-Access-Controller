@@ -12,29 +12,22 @@ import org.bukkit.configuration.file.FileConfiguration;
     - sendConfigList()
  */
 
-public class LocalConfigService {
+public class ConfigService {
+    private final NetherAccessController netherAccessController;
 
-    private static LocalConfigService instance;
     private boolean altered = false;
 
-    private LocalConfigService() {
-
-    }
-
-    public static LocalConfigService getInstance() {
-        if (instance == null) {
-            instance = new LocalConfigService();
-        }
-        return instance;
+    public ConfigService(NetherAccessController netherAccessController) {
+        this.netherAccessController = netherAccessController;
     }
 
     public void saveMissingConfigDefaultsIfNotPresent() {
         // set version
         if (!getConfig().isString("version")) {
-            getConfig().addDefault("version", NetherAccessController.getInstance().getVersion());
+            getConfig().addDefault("version", netherAccessController.getVersion());
         }
         else {
-            getConfig().set("version", NetherAccessController.getInstance().getVersion());
+            getConfig().set("version", netherAccessController.getVersion());
         }
 
         // save config options
@@ -54,7 +47,7 @@ public class LocalConfigService {
             getConfig().set("preventPortalCreation", true);
         }
         getConfig().options().copyDefaults(true);
-        NetherAccessController.getInstance().saveConfig();
+        netherAccessController.saveConfig();
     }
 
     public void setConfigOption(String option, String value, CommandSender sender) {
@@ -81,7 +74,7 @@ public class LocalConfigService {
             }
 
             // save
-            NetherAccessController.getInstance().saveConfig();
+            netherAccessController.saveConfig();
             altered = true;
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
@@ -103,7 +96,7 @@ public class LocalConfigService {
     }
 
     public FileConfiguration getConfig() {
-        return NetherAccessController.getInstance().getConfig();
+        return netherAccessController.getConfig();
     }
 
     public int getInt(String option) {

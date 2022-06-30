@@ -12,9 +12,10 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class LocalStorageService {
-
-    private static LocalStorageService instance;
+public class StorageService {
+    private final ConfigService configService;
+    private final NetherAccessController netherAccessController;
+    private final PersistentData persistentData;
 
     private final static String FILE_PATH = "./plugins/NetherAccessController/";
     private final static String ALLOWED_PLAYERS_FILE_NAME = "allowedPlayers.json";
@@ -23,21 +24,16 @@ public class LocalStorageService {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
 
-    private LocalStorageService() {
-
-    }
-
-    public static LocalStorageService getInstance() {
-        if (instance == null) {
-            instance = new LocalStorageService();
-        }
-        return instance;
+    public StorageService(ConfigService configService, NetherAccessController netherAccessController, PersistentData persistentData) {
+        this.configService = configService;
+        this.netherAccessController = netherAccessController;
+        this.persistentData = persistentData;
     }
 
     public void save() {
         saveAllowedPlayers();
-        if (LocalConfigService.getInstance().hasBeenAltered()) {
-            NetherAccessController.getInstance().saveConfig();
+        if (configService.hasBeenAltered()) {
+            netherAccessController.saveConfig();
         }
     }
 
@@ -47,7 +43,7 @@ public class LocalStorageService {
 
     private void saveAllowedPlayers() {
         List<Map<String, String>> allowedPlayers = new ArrayList<>();
-        allowedPlayers.add(PersistentData.getInstance().save());
+        allowedPlayers.add(persistentData.save());
 
         writeOutFiles(allowedPlayers);
     }
@@ -68,15 +64,15 @@ public class LocalStorageService {
 
     private void loadAllowedPlayers() {
 
-        // PersistentData.getInstance().clear();
+        // persistentData.clear();
 
         ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ALLOWED_PLAYERS_FILE_NAME);
 
         if (data.size() > 0) {
-            PersistentData.getInstance().load(data.get(0));
+            persistentData.load(data.get(0));
         }
         else {
-            if (NetherAccessController.getInstance().isDebugEnabled()) {
+            if (netherAccessController.isDebugEnabled()) {
                 System.out.println("[DEBUG] No save files found!");
             }
         }

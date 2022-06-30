@@ -4,9 +4,14 @@ import dansplugins.netheraccesscontroller.data.PersistentData;
 import org.bukkit.command.CommandSender;
 
 public class ListCommand {
+    private final PersistentData persistentData;
+
+    public ListCommand(PersistentData persistentData) {
+        this.persistentData = persistentData;
+    }
 
     public boolean execute(CommandSender sender) {
-        PersistentData.getInstance().sendListToSender(sender);
+        persistentData.sendListToSender(sender);
         return false;
     }
 

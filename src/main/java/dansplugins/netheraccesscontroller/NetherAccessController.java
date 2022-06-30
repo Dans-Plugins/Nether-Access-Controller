@@ -1,10 +1,13 @@
 package dansplugins.netheraccesscontroller;
 
 import dansplugins.netheraccesscontroller.bstats.Metrics;
-import dansplugins.netheraccesscontroller.services.LocalCommandService;
-import dansplugins.netheraccesscontroller.services.LocalConfigService;
-import dansplugins.netheraccesscontroller.services.LocalStorageService;
+import dansplugins.netheraccesscontroller.data.PersistentData;
+import dansplugins.netheraccesscontroller.services.CommandService;
+import dansplugins.netheraccesscontroller.services.ConfigService;
+import dansplugins.netheraccesscontroller.services.StorageService;
+import dansplugins.netheraccesscontroller.utils.ArgumentParser;
 import dansplugins.netheraccesscontroller.utils.EventRegistry;
+import dansplugins.netheraccesscontroller.utils.UUIDChecker;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
@@ -13,37 +16,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 
 public final class NetherAccessController extends JavaPlugin implements Listener {
+    private final String pluginVersion = "v" + getDescription().getVersion();
 
-    private static NetherAccessController instance;
-
-    public static NetherAccessController getInstance() {
-        return instance;
-    }
-
-    private final String version = "v1.0.1";
+    private final ConfigService configService = new ConfigService(this);
+    private final PersistentData persistentData = new PersistentData();
+    private final EventRegistry eventRegistry = new EventRegistry(this, configService, persistentData);
+    private final StorageService storageService = new StorageService(configService, this, persistentData);
+    private final UUIDChecker uuidChecker = new UUIDChecker();
+    private final ArgumentParser argumentParser = new ArgumentParser();
 
     @Override
     public void onEnable() {
-        // set instance
-        instance = this;
-
         // create/load config
         if (!(new File("./plugins/NetherAccessController/config.yml").exists())) {
-            LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
+            configService.saveMissingConfigDefaultsIfNotPresent();
         }
         else {
             // pre load compatibility checks
             if (isVersionMismatched()) {
-                LocalConfigService.getInstance().saveMissingConfigDefaultsIfNotPresent();
+                configService.saveMissingConfigDefaultsIfNotPresent();
             }
             reloadConfig();
         }
 
         // register event handlers
-        EventRegistry.getInstance().registerEvents();
+        eventRegistry.registerEvents();
 
         // load save files
-        LocalStorageService.getInstance().load();
+        storageService.load();
 
         // bStats
         int pluginId = 12673;
@@ -52,16 +52,16 @@ public final class NetherAccessController extends JavaPlugin implements Listener
 
     @Override
     public void onDisable() {
-        LocalStorageService.getInstance().save();
+        storageService.save();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        LocalCommandService localCommandService = new LocalCommandService();
-        return localCommandService.interpretCommand(sender, label, args);
+        CommandService commandService = new CommandService(this, persistentData, uuidChecker, configService, argumentParser);
+        return commandService.interpretCommand(sender, label, args);
     }
 
     public String getVersion() {
-        return version;
+        return pluginVersion;
     }
 
     public boolean isDebugEnabled() {
