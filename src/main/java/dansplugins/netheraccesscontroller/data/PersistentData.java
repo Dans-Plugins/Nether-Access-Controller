@@ -13,20 +13,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class PersistentData {
-    private static PersistentData instance;
-
-    ArrayList<UUID> allowedPlayers = new ArrayList<UUID>();
-
-    private PersistentData() {
-
-    }
-
-    public static PersistentData getInstance() {
-        if (instance == null) {
-            instance = new PersistentData();
-        }
-        return instance;
-    }
+    private ArrayList<UUID> allowedPlayers = new ArrayList<UUID>();
 
     public ArrayList<UUID> getAllowedPlayers() {
         return allowedPlayers;

@@ -10,13 +10,6 @@ import static org.bukkit.Bukkit.getOnlinePlayers;
 
 public class UUIDChecker {
 
-    private static UUIDChecker instance;
-
-    public static UUIDChecker getInstance() {
-        if (instance == null) instance = new UUIDChecker();
-        return instance;
-    }
-
     public String findPlayerNameBasedOnUUID(UUID playerUUID) {
         // Check online
         for (Player player : getOnlinePlayers()) {
