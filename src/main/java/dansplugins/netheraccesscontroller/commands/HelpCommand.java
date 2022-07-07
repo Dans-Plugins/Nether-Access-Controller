@@ -3,6 +3,9 @@ package dansplugins.netheraccesscontroller.commands;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class HelpCommand {
 
     public boolean execute(CommandSender sender) {

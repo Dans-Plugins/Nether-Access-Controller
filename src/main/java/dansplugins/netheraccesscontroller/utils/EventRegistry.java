@@ -7,6 +7,9 @@ import dansplugins.netheraccesscontroller.listeners.PlayerPortalEventListener;
 import dansplugins.netheraccesscontroller.services.ConfigService;
 import org.bukkit.plugin.PluginManager;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class EventRegistry {
     private final NetherAccessController netherAccessController;
     private final ConfigService configService;

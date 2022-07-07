@@ -10,8 +10,14 @@ import dansplugins.netheraccesscontroller.data.PersistentData;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class StorageService {
     private final ConfigService configService;
     private final NetherAccessController netherAccessController;
@@ -22,7 +28,7 @@ public class StorageService {
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();;
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();;
 
     public StorageService(ConfigService configService, NetherAccessController netherAccessController, PersistentData persistentData) {
         this.configService = configService;

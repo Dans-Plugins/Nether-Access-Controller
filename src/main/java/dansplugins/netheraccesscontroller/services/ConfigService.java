@@ -12,6 +12,9 @@ import org.bukkit.configuration.file.FileConfiguration;
     - sendConfigList()
  */
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class ConfigService {
     private final NetherAccessController netherAccessController;
 

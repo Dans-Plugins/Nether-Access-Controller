@@ -9,6 +9,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class DenyCommand {
     private final UUIDChecker uuidChecker;
     private final PersistentData persistentData;

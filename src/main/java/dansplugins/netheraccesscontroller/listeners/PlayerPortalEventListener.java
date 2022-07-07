@@ -9,6 +9,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class PlayerPortalEventListener implements Listener {
     private final NetherAccessController netherAccessController;
     private final ConfigService configService;

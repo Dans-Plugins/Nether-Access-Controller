@@ -11,6 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class InteractionListener implements Listener {
     private final NetherAccessController netherAccessController;
     private final ConfigService configService;

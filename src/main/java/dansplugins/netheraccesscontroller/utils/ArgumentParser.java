@@ -2,6 +2,9 @@ package dansplugins.netheraccesscontroller.utils;
 
 import java.util.ArrayList;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class ArgumentParser {
 
     public ArrayList<String> getArgumentsInsideSingleQuotes(String[] args) {
