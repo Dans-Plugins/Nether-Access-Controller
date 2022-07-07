@@ -10,8 +10,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class PersistentData {
     private ArrayList<UUID> allowedPlayers = new ArrayList<UUID>();
 
