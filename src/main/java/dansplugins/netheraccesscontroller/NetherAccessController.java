@@ -15,6 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public final class NetherAccessController extends JavaPlugin implements Listener {
     private final String pluginVersion = "v" + getDescription().getVersion();
 

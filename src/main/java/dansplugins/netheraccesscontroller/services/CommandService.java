@@ -8,6 +8,9 @@ import dansplugins.netheraccesscontroller.utils.UUIDChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class CommandService {
     private final NetherAccessController netherAccessController;
     private final PersistentData persistentData;

@@ -7,6 +7,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class ConfigCommand {
     private final ConfigService configService;
     private final ArgumentParser argumentParser;
@@ -33,7 +36,7 @@ public class ConfigCommand {
             }
             String option = args[1];
 
-            String value = "";
+            String value;
             if (option.equalsIgnoreCase("denyUsageMessage") || option.equalsIgnoreCase("denyCreationMessage")) {
                 ArrayList<String> singleQuoteArgs = argumentParser.getArgumentsInsideSingleQuotes(args);
                 if (singleQuoteArgs.size() == 0) {

@@ -8,23 +8,10 @@ import java.util.UUID;
 import static org.bukkit.Bukkit.getOfflinePlayers;
 import static org.bukkit.Bukkit.getOnlinePlayers;
 
+/**
+ * @author Daniel McCoy Stephenson
+ */
 public class UUIDChecker {
-
-    public String findPlayerNameBasedOnUUID(UUID playerUUID) {
-        // Check online
-        for (Player player : getOnlinePlayers()) {
-            if (player.getUniqueId().equals(playerUUID)) {
-                return player.getName();
-            }
-        }
-        // Check offline
-        for (OfflinePlayer player : getOfflinePlayers()) {
-            if (player.getUniqueId().equals(playerUUID)) {
-                return player.getName();
-            }
-        }
-        return "";
-    }
 
     public UUID findUUIDBasedOnPlayerName(String playerName) {
         // Check online
