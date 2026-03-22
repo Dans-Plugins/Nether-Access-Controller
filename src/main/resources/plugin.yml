@@ -8,13 +8,13 @@ commands:
   nac:
 
 permissions:
-  wac.help:
+  nac.help:
     default: op
-  wac.list:
+  nac.list:
     default: op
-  wac.allow:
+  nac.allow:
     default: op
-  wac.deny:
+  nac.deny:
     default: op
-  wac.config:
+  nac.config:
     default: op
