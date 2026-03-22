@@ -13,7 +13,7 @@ All commands use the `/nac` base command.
 ### /nac help
 
 **Description:** Lists all available commands.
-**Permission:** `nac.help`
+**Permission:** `wac.help`
 **Usage:** `/nac help`
 
 ## Whitelist Commands
@@ -21,21 +21,21 @@ All commands use the `/nac` base command.
 ### /nac allow \<playerName\>
 
 **Description:** Adds a player to the nether access whitelist, allowing them to create and use nether portals.
-**Permission:** `nac.allow`
+**Permission:** `wac.allow`
 **Usage:** `/nac allow <playerName>`
 **Example:** `/nac allow Steve`
 
 ### /nac deny \<playerName\>
 
 **Description:** Removes a player from the nether access whitelist, preventing them from creating and using nether portals.
-**Permission:** `nac.deny`
+**Permission:** `wac.deny`
 **Usage:** `/nac deny <playerName>`
 **Example:** `/nac deny Steve`
 
 ### /nac list
 
 **Description:** Displays all players currently on the nether access whitelist.
-**Permission:** `nac.list`
+**Permission:** `wac.list`
 **Usage:** `/nac list`
 
 ## Configuration Commands
@@ -43,13 +43,13 @@ All commands use the `/nac` base command.
 ### /nac config show
 
 **Description:** Displays all current configuration settings and their values.
-**Permission:** `nac.config`
+**Permission:** `wac.config`
 **Usage:** `/nac config show`
 
 ### /nac config set \<option\> \<value\>
 
 **Description:** Sets a configuration option to the specified value. Use single quotes around values that contain spaces.
-**Permission:** `nac.config`
+**Permission:** `wac.config`
 **Usage:** `/nac config set <option> <value>`
 **Example:** `/nac config set preventPortalUsage true`
 **Example:** `/nac config set denyUsageMessage 'You cannot enter the nether.'`

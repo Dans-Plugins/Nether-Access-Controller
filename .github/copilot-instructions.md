@@ -15,7 +15,7 @@ making any changes.
 
 - `src/main/java/` – Plugin source code
 - `src/main/resources/` – `plugin.yml` and resource files
-- `src/test/java/` – Unit tests
+- `src/test/java/` – Unit tests (create this directory as needed)
 
 ### Key Packages
 

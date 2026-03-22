@@ -58,8 +58,8 @@ Use single quotes around messages that contain spaces.
 
 | Permission | Default | Description |
 |------------|---------|-------------|
-| `nac.help` | op | Access the help command |
-| `nac.list` | op | View the nether access whitelist |
-| `nac.allow` | op | Allow a player nether access |
-| `nac.deny` | op | Deny a player nether access |
-| `nac.config` | op | View and modify configuration |
+| `wac.help` | op | Access the help command |
+| `wac.list` | op | View the nether access whitelist |
+| `wac.allow` | op | Allow a player nether access |
+| `wac.deny` | op | Deny a player nether access |
+| `wac.config` | op | View and modify configuration |
