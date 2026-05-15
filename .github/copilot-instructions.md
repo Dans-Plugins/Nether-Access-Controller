@@ -34,6 +34,6 @@ making any changes.
 
 ## Contribution Workflow
 
-- Branch from `develop` for all changes.
-- Open a pull request against `develop`, not `main`.
+- Branch from `main` for all changes.
+- Open a pull request against `main`.
 - Reference the related GitHub issue in every pull request description.
