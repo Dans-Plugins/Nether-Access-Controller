@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Unit tests (JUnit 5) covering the whitelist logic in `PersistentData`
+- `.gitignore` for Maven build output (`target/`) and common editor/IDE artifacts
 
 ## [1.1.0]
 
