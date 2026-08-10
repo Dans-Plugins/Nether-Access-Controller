@@ -2,6 +2,7 @@ package dansplugins.netheraccesscontroller.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -83,11 +84,35 @@ public class PersistentData {
         return saveMap;
     }
 
+    /**
+     * Replaces the whitelist with the one described by the given save data.
+     *
+     * Save data that carries no usable whitelist leaves an empty whitelist rather than a null
+     * one. A null whitelist would make every later access check throw out of its event handler,
+     * which leaves the restricted event uncancelled and lets the player through; an empty
+     * whitelist denies everyone, which is the safe direction for this plugin.
+     */
     public void load(Map<String, String> data) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         Type arrayListTypeUUID = new TypeToken<ArrayList<UUID>>(){}.getType();
 
-        allowedPlayers = gson.fromJson(data.get("allowedPlayers"), arrayListTypeUUID);
+        ArrayList<UUID> loadedPlayers = null;
+        if (data != null) {
+            try {
+                // Gson returns null when the key is absent or its value is the JSON literal null.
+                loadedPlayers = gson.fromJson(data.get("allowedPlayers"), arrayListTypeUUID);
+            } catch (JsonParseException e) {
+                System.out.println("ERROR: Saved whitelist could not be parsed: " + e.toString());
+            }
+        }
+
+        if (loadedPlayers == null) {
+            System.out.println("WARNING: No whitelist could be recovered from the save data. "
+                    + "No player is allowed to access the nether until one is allowed again.");
+            loadedPlayers = new ArrayList<UUID>();
+        }
+
+        allowedPlayers = loadedPlayers;
     }
 }

@@ -72,6 +72,20 @@ public final class NetherAccessController extends JavaPlugin implements Listener
     }
 
     private boolean isVersionMismatched() {
-        return !getConfig().getString("version").equalsIgnoreCase(getVersion());
+        return isVersionMismatched(getConfig().getString("version"), getVersion());
+    }
+
+    /**
+     * Reports whether the version recorded in the config file differs from the running version.
+     *
+     * A config file with no version key at all counts as mismatched, which routes the caller to
+     * saveMissingConfigDefaultsIfNotPresent and writes the key back. Treating it as anything else
+     * would mean throwing out of onEnable, and a plugin that fails to enable registers no
+     * listeners, so every player could then create and use nether portals.
+     *
+     * Package-private and static so that this can be exercised without a running server.
+     */
+    static boolean isVersionMismatched(String configVersion, String pluginVersion) {
+        return configVersion == null || !configVersion.equalsIgnoreCase(pluginVersion);
     }
 }

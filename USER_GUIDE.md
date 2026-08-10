@@ -54,6 +54,12 @@ By default, only portal creation is blocked. To also block portal usage:
 
 Use single quotes around messages that contain spaces.
 
+### Recovering an Unreadable Whitelist
+
+The whitelist is stored in `plugins/NetherAccessController/allowedPlayers.json`. If that file cannot be read at startup — because it is empty, or was truncated by a crash part-way through a save — the plugin reports it in the server log and renames it to `allowedPlayers.json.unreadable`, then starts with an empty whitelist so that portal restrictions stay in force.
+
+No player has nether access until the whitelist is rebuilt. Rebuild it with `/nac allow <playerName>`, or stop the server, repair the renamed file by hand and restore it to its original name before starting again.
+
 ## Permissions
 
 | Permission | Default | Description |
