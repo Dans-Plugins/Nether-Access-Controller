@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - A `Dev Release` workflow, which republishes a rolling `dev` prerelease of `main` on every non-documentation push. This is what Dan's Plugin Manager's experimental channel installs from: `/dpm get netheraccesscontroller --experimental` reads `releases/tags/dev`, so without it there is nothing for that command to download. The prerelease is unreleased, unreviewed code and is marked as such.
 
-### Fixed
+### Security
 
 - `/nac config` no longer runs for players who lack the `nac.config` permission. The permission was checked and the denial message was sent, but the result was discarded and the command executed anyway, so any player could read the configuration with `/nac config show` or disable whitelist enforcement outright with `/nac config set preventPortalCreation false`. Servers that have not granted `nac.config` beyond operators are advised to check `config.yml` for unexpected values.
 
