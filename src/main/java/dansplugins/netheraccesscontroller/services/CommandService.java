@@ -64,7 +64,7 @@ public class CommandService {
             }
 
             if (secondaryLabel.equalsIgnoreCase("config")) {
-                checkPermission(sender, "nac.config");
+                if (!checkPermission(sender, "nac.config")) { return false; }
                 ConfigCommand command = new ConfigCommand(configService, argumentParser);
                 return command.execute(sender, arguments);
             }
