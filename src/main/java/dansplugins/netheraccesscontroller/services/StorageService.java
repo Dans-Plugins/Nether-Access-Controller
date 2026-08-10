@@ -81,7 +81,9 @@ public class StorageService {
         }
         else {
             if (netherAccessController.isDebugEnabled()) {
-                System.out.println("[DEBUG] No save files found!");
+                // Reached when no save file exists yet, and also when one exists but nothing could
+                // be read from it, so the message does not claim the file is absent.
+                System.out.println("[DEBUG] No whitelist was loaded from a save file!");
             }
         }
 
