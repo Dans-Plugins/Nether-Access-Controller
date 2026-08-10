@@ -3,6 +3,7 @@ package dansplugins.netheraccesscontroller.data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -107,5 +108,60 @@ class PersistentDataTest {
         persistentData.load(saved);
 
         assertTrue(persistentData.getAllowedPlayers().isEmpty());
+    }
+
+    /**
+     * Save data that carries no usable whitelist must leave an empty whitelist behind rather
+     * than a null one. A null whitelist makes isPlayerAllowed throw out of the listener that
+     * called it, which leaves the portal event uncancelled and lets a player who was never
+     * allowed through — the opposite of what this plugin exists to do. Each case below asserts
+     * the deny-everyone fallback by calling isPlayerAllowed, which is the method the listeners
+     * themselves call.
+     */
+    @Test
+    void load_withSaveDataMissingTheWhitelistKey_deniesEveryone() {
+        persistentData.load(new HashMap<String, String>());
+
+        assertTrue(persistentData.getAllowedPlayers().isEmpty());
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
+    }
+
+    @Test
+    void load_withNullWhitelistValue_deniesEveryone() {
+        Map<String, String> saved = new HashMap<String, String>();
+        saved.put("allowedPlayers", null);
+
+        persistentData.load(saved);
+
+        assertTrue(persistentData.getAllowedPlayers().isEmpty());
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
+    }
+
+    @Test
+    void load_withUnparseableWhitelistValue_deniesEveryone() {
+        Map<String, String> saved = new HashMap<String, String>();
+        saved.put("allowedPlayers", "[\"" + playerUUID + "\"");
+
+        persistentData.load(saved);
+
+        assertTrue(persistentData.getAllowedPlayers().isEmpty());
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
+    }
+
+    @Test
+    void load_withNullSaveData_deniesEveryone() {
+        persistentData.load(null);
+
+        assertTrue(persistentData.getAllowedPlayers().isEmpty());
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
+    }
+
+    @Test
+    void load_withUnusableSaveData_discardsAnyPreviouslyLoadedWhitelist() {
+        persistentData.setPlayerAllowed(playerUUID, true);
+
+        persistentData.load(new HashMap<String, String>());
+
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
     }
 }
