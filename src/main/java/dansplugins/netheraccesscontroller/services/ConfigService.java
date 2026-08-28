@@ -57,37 +57,61 @@ public class ConfigService {
 
         if (getConfig().isSet(option)) {
 
-            if (option.equalsIgnoreCase("version")) {
+            if (option.equals("version")) {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
                 return;
-            } else if (option.equalsIgnoreCase("a")) {
-                getConfig().set(option, Integer.parseInt(value));
-                sender.sendMessage(ChatColor.GREEN + "Integer set.");
-            } else if (option.equalsIgnoreCase("debugMode")
-                    || option.equalsIgnoreCase("preventPortalUsage")
-                    || option.equalsIgnoreCase("preventPortalCreation")) {
-                getConfig().set(option, Boolean.parseBoolean(value));
+            } else if (isBooleanOption(option)) {
+                Boolean parsedValue = parseBoolean(value);
+                if (parsedValue == null) {
+                    sender.sendMessage(ChatColor.RED + "'" + value + "' isn't a valid value for "
+                            + option + ". Accepted values are 'true' and 'false'.");
+                    return;
+                }
+                getConfig().set(option, parsedValue);
                 sender.sendMessage(ChatColor.GREEN + "Boolean set.");
-            } else if (option.equalsIgnoreCase("c")) { // no doubles yet
-                getConfig().set(option, Double.parseDouble(value));
-                sender.sendMessage(ChatColor.GREEN + "Double set.");
             } else {
                 getConfig().set(option, value);
                 sender.sendMessage(ChatColor.GREEN + "String set.");
             }
 
             // save
-            netherAccessController.saveConfig();
+            saveConfig();
             altered = true;
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
         }
     }
 
+    /**
+     * The options that saveMissingConfigDefaultsIfNotPresent writes as booleans. The comparison is
+     * exact because the isSet gate that precedes it is: a differently-cased spelling of an option
+     * name is rejected there first, so accepting one here would never be reached.
+     */
+    private boolean isBooleanOption(String option) {
+        return option.equals("debugMode")
+                || option.equals("preventPortalUsage")
+                || option.equals("preventPortalCreation");
+    }
+
+    /**
+     * Returns null for any value that is neither 'true' nor 'false', so that the caller can reject
+     * it. Boolean.parseBoolean cannot be used here: it reports every unrecognised value as false
+     * without error, which turns a typo in an enforcement option into a silent disabling of it.
+     */
+    private Boolean parseBoolean(String value) {
+        if (value.equalsIgnoreCase("true")) {
+            return true;
+        }
+        if (value.equalsIgnoreCase("false")) {
+            return false;
+        }
+        return null;
+    }
+
     public void sendConfigList(CommandSender sender) {
         sender.sendMessage(ChatColor.AQUA + "=== Config List ===");
         sender.sendMessage(ChatColor.AQUA + "version: " + getConfig().getString("version")
-                + ", debugMode: " + getString("debugMode")
+                + ", debugMode: " + getBoolean("debugMode")
                 + ", preventPortalUsage: " + getBoolean("preventPortalUsage")
                 + ", preventPortalCreation: " + getBoolean("preventPortalCreation")
                 + ", denyUsageMessage: '" + getString("denyUsageMessage") + "'"
@@ -100,6 +124,14 @@ public class ConfigService {
 
     public FileConfiguration getConfig() {
         return netherAccessController.getConfig();
+    }
+
+    /**
+     * Package-private rather than public so that a test can supply an in-memory configuration in
+     * place of a live plugin; nothing outside this package needs to save the config directly.
+     */
+    void saveConfig() {
+        netherAccessController.saveConfig();
     }
 
     public int getInt(String option) {
