@@ -10,6 +10,8 @@ import org.bukkit.configuration.file.FileConfiguration;
     - saveMissingConfigDefaultsIfNotPresent
     - setConfigOption()
     - sendConfigList()
+    A boolean option must also be named in isBooleanOption(), or setConfigOption() will store it
+    as a string and accept any value for it.
  */
 
 /**
