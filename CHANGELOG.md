@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/nac config set` no longer accepts an unrecognised value for a boolean option. Any value other than `true` was previously stored as `false` and reported as `Boolean set.` in green, so `/nac config set preventPortalCreation yes` — or `1`, or `enabled`, or a mistyped `ture` — silently turned portal-creation enforcement off and let every player create nether portals. Only `true` and `false` are accepted now, in any casing; anything else is refused with a message naming the accepted values, and the stored value is left as it was.
 - The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
 
 ### Added
@@ -18,6 +19,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - The plugin no longer fails to start when `allowedPlayers.json` cannot be read. An empty, truncated or otherwise malformed save file previously threw out of startup, and a server that cannot enable the plugin registers none of its listeners — so every player could create and use nether portals, whitelist or not. Such a file is now reported in the server log, renamed to `allowedPlayers.json.unreadable` so that the save on shutdown cannot overwrite it, and startup continues with an empty whitelist. Save data that parses but carries no whitelist is handled the same way, in place of the previous behaviour where the first access check afterwards threw and let the player through.
 - The plugin no longer fails to start when `config.yml` exists without a `version` key. The missing key is now treated as a version mismatch, which is the case that already rewrites the missing defaults, rather than being dereferenced. The consequence of the previous behaviour was the same loss of all portal restrictions described above.
+
+### Changed
+
+- `ConfigService` no longer carries the unreachable integer and double branches of `/nac config set`, and lists `debugMode` through the same boolean accessor as the two options beside it. Option names are now compared exactly, matching the case-sensitive lookup that already rejects a differently-cased name before those comparisons are reached. No operator-visible behaviour changes.
 
 ### Security
 

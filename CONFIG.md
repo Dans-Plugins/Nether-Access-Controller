@@ -2,6 +2,8 @@
 
 Configuration can be modified in-game using `/nac config set <option> <value>` or by editing `plugins/NetherAccessController/config.yml` directly.
 
+Options marked below as boolean accept only `true` or `false`, in any casing. Any other value is refused by `/nac config set` and the current setting is kept.
+
 ## debugMode
 
 **Type:** boolean
