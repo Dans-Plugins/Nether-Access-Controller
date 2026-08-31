@@ -58,6 +58,8 @@ Use single quotes around messages that contain spaces.
 
 The whitelist is stored in `plugins/NetherAccessController/allowedPlayers.json`. If that file cannot be read at startup — because it is empty, or was truncated by a crash part-way through a save — the plugin reports it in the server log and renames it to `allowedPlayers.json.unreadable`, then starts with an empty whitelist so that portal restrictions stay in force.
 
+A file set aside earlier is never overwritten by a later one. If `allowedPlayers.json.unreadable` is already there, the next destination is numbered — `allowedPlayers.json.unreadable.2`, then `.3`, and so on. The server log names the path used on each occasion.
+
 No player has nether access until the whitelist is rebuilt. Rebuild it with `/nac allow <playerName>`, or stop the server, repair the renamed file by hand and restore it to its original name before starting again.
 
 ## Permissions

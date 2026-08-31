@@ -85,6 +85,42 @@ class StorageServiceTest {
         assertRenamedOutOfTheWay(saveFile);
     }
 
+    @Test
+    void loadDataFromFilename_withASecondUnreadableFile_keepsTheFirstOneSetAside() throws IOException {
+        File alreadySetAside = unreadableCopyOf(new File(temporaryDirectory, "allowedPlayers.json"));
+        Files.write(alreadySetAside.toPath(), "first".getBytes(StandardCharsets.UTF_8));
+        File saveFile = saveFileContaining("second");
+
+        ArrayList<HashMap<String, String>> data = storageService.loadDataFromFilename(saveFile.getPath());
+
+        assertTrue(data.isEmpty());
+        assertFalse(saveFile.exists(), "The second unreadable save file should no longer be in place");
+        assertEquals("first", contentsOf(alreadySetAside),
+                "The save file set aside first must not be displaced by the second one");
+        assertEquals("second", contentsOf(numberedUnreadableCopyOf(saveFile, 2)),
+                "The second unreadable save file should have been set aside under a free path");
+    }
+
+    @Test
+    void loadDataFromFilename_withEveryDestinationTaken_leavesTheFileInPlace() throws IOException {
+        File saveFile = saveFileContaining("unreadable");
+        Files.write(unreadableCopyOf(saveFile).toPath(), "taken".getBytes(StandardCharsets.UTF_8));
+        for (int attempt = 2; attempt <= StorageService.MAXIMUM_UNREADABLE_FILE_COPIES; attempt++) {
+            Files.write(numberedUnreadableCopyOf(saveFile, attempt).toPath(),
+                    "taken".getBytes(StandardCharsets.UTF_8));
+        }
+
+        ArrayList<HashMap<String, String>> data = storageService.loadDataFromFilename(saveFile.getPath());
+
+        // Leaving the file where it is loses it to the save on shutdown, but overwriting one of
+        // the copies already set aside would lose one of those instead, and the log says which.
+        assertTrue(data.isEmpty());
+        assertEquals("unreadable", contentsOf(saveFile),
+                "With no free destination the save file should be left untouched");
+        assertEquals("taken", contentsOf(unreadableCopyOf(saveFile)),
+                "No save file already set aside should be overwritten");
+    }
+
     /**
      * The rename is what keeps the save on shutdown from overwriting a file an operator could
      * still repair by hand.
@@ -97,6 +133,14 @@ class StorageServiceTest {
 
     private File unreadableCopyOf(File saveFile) {
         return new File(saveFile.getPath() + ".unreadable");
+    }
+
+    private File numberedUnreadableCopyOf(File saveFile, int number) {
+        return new File(saveFile.getPath() + ".unreadable." + number);
+    }
+
+    private String contentsOf(File file) throws IOException {
+        return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
     }
 
     private File saveFileContaining(String contents) throws IOException {
