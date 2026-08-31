@@ -26,6 +26,13 @@ public class CommandService {
         this.argumentParser = argumentParser;
     }
 
+    /**
+     * Runs the given command and reports whether it was used correctly.
+     *
+     * The value reaches Bukkit as the result of onCommand, where false asks the server to print
+     * the command's usage string. A command that did what was asked of it therefore returns true,
+     * so that its output is not followed by usage text; only misuse and a refusal return false.
+     */
     public boolean interpretCommand(CommandSender sender, String label, String[] args) {
         if (label.equalsIgnoreCase("NetherAccessController") || label.equalsIgnoreCase("nac")) {
 
@@ -33,7 +40,7 @@ public class CommandService {
                 sender.sendMessage(ChatColor.AQUA + "Nether Access Controller " + netherAccessController.getVersion());
                 sender.sendMessage(ChatColor.AQUA + "Developer: DanTheTechMan");
                 sender.sendMessage(ChatColor.AQUA + "Wiki: https://github.com/dmccoystephenson/Nether-Access-Controller/wiki");
-                return false;
+                return true;
             }
 
             String secondaryLabel = args[0];
