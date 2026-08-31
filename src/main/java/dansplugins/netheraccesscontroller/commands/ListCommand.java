@@ -16,7 +16,7 @@ public class ListCommand {
     /**
      * Returns true because the whitelist was printed. The value reaches Bukkit as the result of
      * onCommand, where false means the command was used incorrectly and asks the server to print
-     * the command's usage string after the output above.
+     * the command's usage string underneath the whitelist.
      */
     public boolean execute(CommandSender sender) {
         persistentData.sendListToSender(sender);
