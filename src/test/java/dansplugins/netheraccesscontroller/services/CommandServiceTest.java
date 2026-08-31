@@ -1,5 +1,6 @@
 package dansplugins.netheraccesscontroller.services;
 
+import dansplugins.netheraccesscontroller.data.PersistentData;
 import org.bukkit.command.CommandSender;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * single point where every sub-command's permission node is enforced. A sub-command that
  * runs without its node lets a restricted player reconfigure or inspect the plugin that is
  * meant to restrict them, so each branch is asserted to stop before its command object.
+ *
+ * Also covers the value interpretCommand returns, which reaches Bukkit as the result of onCommand
+ * and asks the server to print the command's usage string when it is false.
  *
  * {@link CommandSender} is stubbed with a {@link Proxy} rather than a mocking library: the
  * project declares no mocking dependency, and only hasPermission and sendMessage are needed.
@@ -74,6 +78,39 @@ class CommandServiceTest {
         assertFalse(result);
         assertEquals(1, sender.messages.size());
         assertTrue(sender.messages.get(0).contains("Sub-commands: show, set"));
+    }
+
+    /**
+     * The return value reaches Bukkit as the result of onCommand, where false asks the server to
+     * print the command's usage string after the whitelist has already been printed. Nothing is
+     * printed today only because plugin.yml declares no usage key for the command.
+     */
+    @Test
+    void list_withPermission_reportsTheCommandAsUsedCorrectly() {
+        RecordingSender sender = new RecordingSender("nac.list");
+        CommandService commandService = new CommandService(null, new PersistentData(), null, null, null);
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"list"});
+
+        assertTrue(result);
+        // The empty-whitelist line proves ListCommand ran rather than stopping at the permission gate.
+        assertEquals(1, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("No one is allowed to access the nether."));
+    }
+
+    /**
+     * The counterpart to the case above: a label the plugin does not own is genuine misuse, so
+     * false stays correct there.
+     */
+    @Test
+    void unrecognisedCommand_reportsTheCommandAsMisused() {
+        RecordingSender sender = new RecordingSender();
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"nonsense"});
+
+        assertFalse(result);
+        assertEquals(1, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("doesn't recognize that command"));
     }
 
     @Test

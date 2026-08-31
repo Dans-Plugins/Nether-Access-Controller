@@ -11,6 +11,10 @@ import dansplugins.netheraccesscontroller.data.PersistentData;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +31,15 @@ public class StorageService {
     private final static String FILE_PATH = "./plugins/NetherAccessController/";
     private final static String ALLOWED_PLAYERS_FILE_NAME = "allowedPlayers.json";
     private final static String UNREADABLE_FILE_SUFFIX = ".unreadable";
+
+    /**
+     * How many destinations are tried before an unreadable save file is left where it is. A bound
+     * is needed because each attempt touches the filesystem, and an operator who has accumulated
+     * this many unread copies is not acting on the log messages anyway.
+     *
+     * Package-private so that the exhausted case can be set up by tests without restating the bound.
+     */
+    final static int MAXIMUM_UNREADABLE_FILE_COPIES = 100;
 
     private final static Type LIST_MAP_TYPE = new TypeToken<ArrayList<HashMap<String, String>>>(){}.getType();
 
@@ -129,19 +142,51 @@ public class StorageService {
         return new ArrayList<>();
     }
 
+    /**
+     * Renames an unreadable save file out of the way, onto the first destination not already
+     * taken by one set aside on an earlier occasion.
+     *
+     * A file set aside earlier is itself still worth recovering by hand, so it is stepped over
+     * rather than replaced: the destination is numbered upwards until a free one is found, and
+     * the rename is given up on rather than performed if none is.
+     */
     private void setUnreadableFileAside(File file) {
-        File destination = new File(file.getPath() + UNREADABLE_FILE_SUFFIX);
+        for (int attempt = 1; attempt <= MAXIMUM_UNREADABLE_FILE_COPIES; attempt++) {
+            Path destination = unreadableDestinationFor(file, attempt);
+            try {
+                // REPLACE_EXISTING is deliberately not passed. Files.move then fails on a taken
+                // destination instead of silently replacing what is there, which File.renameTo
+                // does on a POSIX filesystem, and it does so without the race a prior exists()
+                // check would leave open.
+                Files.move(file.toPath(), destination);
+                System.out.println("ERROR: " + file.getPath() + " has been renamed to " + destination
+                        + " so that it is not overwritten. No player is allowed to access the nether until the"
+                        + " whitelist is rebuilt or the file is repaired and restored.");
+                return;
+            } catch (FileAlreadyExistsException e) {
+                // Taken by a save file set aside earlier, so the next destination is tried.
+            } catch (IOException e) {
+                System.out.println("ERROR: " + file.getPath() + " could not be renamed to " + destination
+                        + ": " + e.toString());
+                break;
+            }
+        }
 
-        if (file.renameTo(destination)) {
-            System.out.println("ERROR: " + file.getPath() + " has been renamed to " + destination.getPath()
-                    + " so that it is not overwritten. No player is allowed to access the nether until the"
-                    + " whitelist is rebuilt or the file is repaired and restored.");
+        System.out.println("ERROR: " + file.getPath() + " could not be set aside and will be overwritten"
+                + " when the server stops. A copy should be taken now if its contents are still wanted."
+                + " No player is allowed to access the nether in the meantime.");
+    }
+
+    /**
+     * The destination for the given attempt: the plain suffix first, then the same suffix numbered
+     * upwards. The first attempt is left unnumbered so that the common case — nothing set aside
+     * before — keeps the path the previous behaviour used and the user guide documents.
+     */
+    private Path unreadableDestinationFor(File file, int attempt) {
+        if (attempt == 1) {
+            return Paths.get(file.getPath() + UNREADABLE_FILE_SUFFIX);
         }
-        else {
-            System.out.println("ERROR: " + file.getPath() + " could not be renamed to " + destination.getPath()
-                    + " and will be overwritten when the server stops. A copy should be taken now if its"
-                    + " contents are still wanted. No player is allowed to access the nether in the meantime.");
-        }
+        return Paths.get(file.getPath() + UNREADABLE_FILE_SUFFIX + "." + attempt);
     }
 
 }
