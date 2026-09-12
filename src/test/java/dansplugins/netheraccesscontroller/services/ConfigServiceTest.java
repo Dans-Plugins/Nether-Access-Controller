@@ -5,14 +5,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -172,6 +176,93 @@ class ConfigServiceTest {
         assertTrue(lastMessage().contains("debugMode: false"));
         assertTrue(lastMessage().contains("preventPortalUsage: false"));
         assertTrue(lastMessage().contains("preventPortalCreation: true"));
+    }
+
+    /**
+     * A server upgraded from before usage reporting has no usage-reporting block in its
+     * config.yml, and saveMissingConfigDefaultsIfNotPresent only runs on a version change. Bukkit
+     * registers the jar's config.yml as the defaults for the file, and the one-argument getters
+     * fall through to them; the two-argument ones return their fallback instead, which for the key
+     * would be "" and would turn reporting off on every existing installation. The defaults here
+     * are the bundled file itself, so this also pins that the jar carries a key.
+     */
+    @Test
+    void usageReporting_readsThroughToTheBundledDefaultsWhenTheFileHasNoBlock() {
+        config.setDefaults(bundledConfig());
+
+        assertTrue(configService.isUsageReportingEnabled());
+        assertEquals("https://trace.danielstephenson.dev", configService.getUsageReportingEndpoint());
+        assertFalse(configService.getUsageReportingKey().isEmpty(),
+                "The bundled config.yml must carry the plugin's key");
+        assertEquals(config.getDefaults().getString("usage-reporting.key"), configService.getUsageReportingKey());
+
+        // The trap being guarded against, measured rather than assumed: the two-argument getters
+        // do not consult the defaults, so reading through them would report no key at all.
+        assertEquals("", config.getString("usage-reporting.key", ""));
+        assertFalse(config.getBoolean("usage-reporting.enabled", false));
+    }
+
+    @Test
+    void usageReporting_isOffWithNoKeyAnywhere() {
+        assertEquals("", configService.getUsageReportingKey(), "no key anywhere must read as off, not as null");
+        assertEquals("https://trace.danielstephenson.dev", configService.getUsageReportingEndpoint());
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    @Test
+    void usageReporting_readsTheConfiguredValuesOverTheBundledDefaults() {
+        config.setDefaults(bundledConfig());
+        config.set("usage-reporting.enabled", false);
+        config.set("usage-reporting.endpoint", "http://localhost:8080");
+        config.set("usage-reporting.key", "abc");
+
+        assertFalse(configService.isUsageReportingEnabled());
+        assertEquals("http://localhost:8080", configService.getUsageReportingEndpoint());
+        assertEquals("abc", configService.getUsageReportingKey());
+    }
+
+    /**
+     * The switch is a boolean option like the three beside it: an in-game 'false' is stored as a
+     * boolean, and an unrecognised value is refused rather than stored as a string that
+     * getBoolean would then read as false.
+     */
+    @Test
+    void setConfigOption_withUsageReportingEnabled_storesABoolean() {
+        config.set("usage-reporting.enabled", true);
+
+        configService.setConfigOption("usage-reporting.enabled", "false", senderProxy());
+
+        assertFalse(configService.isUsageReportingEnabled());
+        assertTrue(lastMessage().contains("Boolean set."));
+    }
+
+    @Test
+    void setConfigOption_withUsageReportingEnabled_refusesAnUnrecognisedValue() {
+        config.set("usage-reporting.enabled", true);
+
+        configService.setConfigOption("usage-reporting.enabled", "off", senderProxy());
+
+        assertTrue(configService.isUsageReportingEnabled());
+        assertRefused("off", "usage-reporting.enabled");
+    }
+
+    @Test
+    void sendConfigList_namesTheUsageReportingSwitch() {
+        config.setDefaults(bundledConfig());
+
+        configService.sendConfigList(senderProxy());
+
+        assertTrue(lastMessage().contains("usage-reporting.enabled: true"));
+    }
+
+    /**
+     * The config.yml shipped in the jar, which Bukkit registers as the defaults for the file on
+     * disk. Read from the test classpath so that the test sees the file as built.
+     */
+    private static YamlConfiguration bundledConfig() {
+        InputStream bundled = ConfigServiceTest.class.getResourceAsStream("/config.yml");
+        assertNotNull(bundled, "src/main/resources/config.yml must be bundled in the jar");
+        return YamlConfiguration.loadConfiguration(new InputStreamReader(bundled, StandardCharsets.UTF_8));
     }
 
     private void assertRefused(String value, String option) {

@@ -12,12 +12,21 @@ import org.bukkit.configuration.file.FileConfiguration;
     - sendConfigList()
     A boolean option must also be named in isBooleanOption(), or setConfigOption() will store it
     as a string and accept any value for it.
+
+    The usage-reporting block is the exception: it is bundled in src/main/resources/config.yml
+    rather than written by saveMissingConfigDefaultsIfNotPresent, and read through the accessors
+    at the bottom of this class. See the comment above them for why.
  */
 
 /**
  * @author Daniel McCoy Stephenson
  */
 public class ConfigService {
+    private static final String USAGE_REPORTING_ENABLED_KEY = "usage-reporting.enabled";
+    private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
+    private static final String USAGE_REPORTING_KEY_KEY = "usage-reporting.key";
+    private static final String DEFAULT_USAGE_REPORTING_ENDPOINT = "https://trace.danielstephenson.dev";
+
     private final NetherAccessController netherAccessController;
 
     private boolean altered = false;
@@ -92,7 +101,8 @@ public class ConfigService {
     private boolean isBooleanOption(String option) {
         return option.equals("debugMode")
                 || option.equals("preventPortalUsage")
-                || option.equals("preventPortalCreation");
+                || option.equals("preventPortalCreation")
+                || option.equals(USAGE_REPORTING_ENABLED_KEY);
     }
 
     /**
@@ -117,7 +127,8 @@ public class ConfigService {
                 + ", preventPortalUsage: " + getBoolean("preventPortalUsage")
                 + ", preventPortalCreation: " + getBoolean("preventPortalCreation")
                 + ", denyUsageMessage: '" + getString("denyUsageMessage") + "'"
-                + ", denyCreationMessage: '" + getString("denyCreationMessage") + "'");
+                + ", denyCreationMessage: '" + getString("denyCreationMessage") + "'"
+                + ", usage-reporting.enabled: " + isUsageReportingEnabled());
     }
 
     public boolean hasBeenAltered() {
@@ -150,6 +161,31 @@ public class ConfigService {
 
     public String getString(String option) {
         return getConfig().getString(option);
+    }
+
+    // The one-argument getters, deliberately. saveDefaultConfig() never touches a
+    // config.yml that already exists, and saveMissingConfigDefaultsIfNotPresent only
+    // runs on a version change, so a server upgraded from a version before usage
+    // reporting can have no usage-reporting block on disk. Bukkit registers the
+    // jar's config.yml as the defaults for that file, and the one-argument
+    // getters fall through to them -- but the two-argument getters return their
+    // explicit fallback instead, which for the key would be "" and would turn
+    // reporting off on every existing installation. Verified against
+    // YamlConfiguration, not assumed.
+
+    public boolean isUsageReportingEnabled() {
+        return getConfig().getBoolean(USAGE_REPORTING_ENABLED_KEY);
+    }
+
+    public String getUsageReportingEndpoint() {
+        String endpoint = getConfig().getString(USAGE_REPORTING_ENDPOINT_KEY);
+        return endpoint != null ? endpoint : DEFAULT_USAGE_REPORTING_ENDPOINT;
+    }
+
+    /** Empty when no key is configured or bundled, which the client treats as "off". */
+    public String getUsageReportingKey() {
+        String key = getConfig().getString(USAGE_REPORTING_KEY_KEY);
+        return key != null ? key : "";
     }
 
 }
