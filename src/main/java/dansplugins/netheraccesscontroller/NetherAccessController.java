@@ -47,6 +47,14 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         else {
             reloadConfig();
         }
+        // A config.yml written before usage reporting existed has no usage-reporting block, and
+        // the version check above only writes the defaults when the plugin version changed. The
+        // one-argument getters read the bundled defaults silently, which is exactly why the
+        // opt-out was invisible: write the block through the same path, once, when it is missing.
+        // isSet() looks at the file, not the bundled defaults.
+        if (!getConfig().isSet("usage-reporting")) {
+            configService.saveMissingConfigDefaultsIfNotPresent();
+        }
 
         // register event handlers
         eventRegistry.registerEvents();
@@ -62,9 +70,23 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
                 .key(configService.getUsageReportingKey())
                 .enabled(configService.isUsageReportingEnabled())
+                .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
+        announceUsageReporting();
         trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+    }
+
+    /**
+     * The startup line that says, on every enable, whether usage reporting is on and how to turn it
+     * off, or why it is off. The reason comes from the client so it matches what it actually did.
+     */
+    private void announceUsageReporting() {
+        if (trace.isEnabled()) {
+            getLogger().info("Usage reporting is on: " + getName() + " sends its name, version and command names to https://trace.danielstephenson.dev - nothing about players or the server. Turn it off with usage-reporting.enabled: false in this plugin's config.yml, or for every plugin with enabled: false in plugins/trace/config.yml. Details: https://github.com/Stephenson-Software/trace#usage-reporting");
+        } else {
+            getLogger().info("Usage reporting is off (" + trace.disabledReason() + ").");
+        }
     }
 
     @Override

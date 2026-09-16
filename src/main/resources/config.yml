@@ -4,6 +4,15 @@
 # actually in use. Nothing about players or the server is included. Sending
 # happens off the main thread, never blocks a tick, and is dropped silently
 # if the server cannot be reached. Set enabled to false to turn it off.
+#
+# Other ways to turn it off:
+#   - Server-wide, for every plugin that reports to trace: set enabled to
+#     false in plugins/trace/config.yml (created by the first such plugin
+#     to enable). Plugins never turn that switch back on.
+#   - Environment: TRACE_USAGE_REPORTING=off or DO_NOT_TRACK=1 on the
+#     server process.
+# The reason reporting is off, if it is, is logged at startup.
+# Details: https://github.com/Stephenson-Software/trace#usage-reporting
 usage-reporting:
   enabled: true
   endpoint: https://trace.danielstephenson.dev

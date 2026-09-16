@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -219,6 +220,25 @@ class ConfigServiceTest {
         assertFalse(configService.isUsageReportingEnabled());
         assertEquals("http://localhost:8080", configService.getUsageReportingEndpoint());
         assertEquals("abc", configService.getUsageReportingKey());
+    }
+
+    /**
+     * The guard {@code NetherAccessController.onEnable()} uses to write the block once more on an
+     * installation whose config.yml predates it: isSet() on the section must look at the file and
+     * not at the bundled defaults, or the guard would never fire; and after the copyDefaults save
+     * that {@code saveMissingConfigDefaultsIfNotPresent()} performs it must read as present, or the
+     * guard would fire on every enable.
+     */
+    @Test
+    void usageReporting_isSetOnTheSectionSeesTheFileAndNotTheBundledDefaults() {
+        config.setDefaults(bundledConfig());
+        assertFalse(config.isSet("usage-reporting"), "a pre-block file must read as missing even though the defaults carry the block");
+
+        config.options().copyDefaults(true);
+        YamlConfiguration reloaded = YamlConfiguration.loadConfiguration(new StringReader(((YamlConfiguration) config).saveToString()));
+        reloaded.setDefaults(bundledConfig());
+        assertTrue(reloaded.isSet("usage-reporting"), "once written, the block is seen in the file and the guard stays quiet");
+        assertEquals(bundledConfig().getString("usage-reporting.key"), reloaded.getString("usage-reporting.key"));
     }
 
     /**
