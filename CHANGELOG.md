@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Usage reporting is now disclosed at every startup: an INFO line says that NetherAccessController sends its name, version and command names to the trace server and how to turn it off, or, when it is off, why (`environment`, `server-wide config: plugins/trace/config.yml`, `config.yml` or `no key`). It can now also be turned off for every plugin on the server that reports this way with `enabled: false` in `plugins/trace/config.yml` (created by the first such plugin to enable), or for the whole server process with `TRACE_USAGE_REPORTING=off` / `DO_NOT_TRACK=1`. The `usage-reporting` block is written into an existing `config.yml` that lacks it, once, so the switch is visible on servers upgraded from before it existed. The README and `CONFIG.md` describe what is sent and every way to turn it off. Nothing about what is sent changed.
 - `ConfigService` no longer carries the unreachable integer and double branches of `/nac config set`, and lists `debugMode` through the same boolean accessor as the two options beside it. Option names are now compared exactly, matching the case-sensitive lookup that already rejects a differently-cased name before those comparisons are reached. No operator-visible behaviour changes.
 
 ### Security
