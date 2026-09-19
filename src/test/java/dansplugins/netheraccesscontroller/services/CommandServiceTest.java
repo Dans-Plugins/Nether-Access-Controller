@@ -24,7 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * meant to restrict them, so each branch is asserted to stop before its command object.
  *
  * Also covers the value interpretCommand returns, which reaches Bukkit as the result of onCommand
- * and asks the server to print the command's usage string when it is false.
+ * and asks the server to print the command's usage string when it is false. A refusal reports true:
+ * the sender used the command correctly and was told no, and usage text would otherwise follow the
+ * denial and show the command's syntax to the sender the permission node exists to keep from it.
  *
  * {@link CommandSender} is stubbed with a {@link Proxy} rather than a mocking library: the
  * project declares no mocking dependency, and only hasPermission and sendMessage are needed.
@@ -47,7 +49,8 @@ class CommandServiceTest {
 
         boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"config"});
 
-        assertFalse(result);
+        // A refusal is not misuse: true keeps the usage string from following the denial.
+        assertTrue(result);
         // Exactly one message proves ConfigCommand was never reached: had it run, it would
         // have appended its own "Sub-commands: show, set" line after the denial.
         assertEquals(1, sender.messages.size());
@@ -64,7 +67,7 @@ class CommandServiceTest {
         boolean result = commandService.interpretCommand(
                 senderFor(sender), "nac", new String[]{"config", "set", "preventPortalCreation", "false"});
 
-        assertFalse(result);
+        assertTrue(result);
         assertEquals(1, sender.messages.size());
         assertTrue(sender.messages.get(0).contains("nac.config"));
     }
@@ -135,14 +138,15 @@ class CommandServiceTest {
 
     /**
      * Characterizes the guard shared by every sub-command: a sender lacking the node is told
-     * which node is missing and nothing else happens.
+     * which node is missing and nothing else happens. The refusal reports as correct use, so the
+     * server does not follow the denial with the command's usage string.
      */
     private void assertDeniedBeforeExecution(String subCommand, String permission) {
         RecordingSender sender = new RecordingSender();
 
         boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{subCommand, "Steve"});
 
-        assertFalse(result);
+        assertTrue(result);
         assertEquals(1, sender.messages.size());
         assertTrue(sender.messages.get(0).contains(permission));
     }
