@@ -31,7 +31,9 @@ public class CommandService {
      *
      * The value reaches Bukkit as the result of onCommand, where false asks the server to print
      * the command's usage string. A command that did what was asked of it therefore returns true,
-     * so that its output is not followed by usage text; only misuse and a refusal return false.
+     * so that its output is not followed by usage text; only misuse returns false. A refusal for a
+     * missing permission is not misuse: the sender used the command correctly and was told no, and
+     * a usage string would hand the command's syntax to the very sender the node keeps away from it.
      */
     public boolean interpretCommand(CommandSender sender, String label, String[] args) {
         if (label.equalsIgnoreCase("NetherAccessController") || label.equalsIgnoreCase("nac")) {
@@ -47,31 +49,31 @@ public class CommandService {
             String[] arguments = getArguments(args);
 
             if (secondaryLabel.equalsIgnoreCase("help")) {
-                if (!checkPermission(sender, "nac.help")) { return false; }
+                if (!checkPermission(sender, "nac.help")) { return true; }
                 HelpCommand command = new HelpCommand();
                 return command.execute(sender);
             }
 
             if (secondaryLabel.equalsIgnoreCase("list")) {
-                if (!checkPermission(sender, "nac.list")) { return false; }
+                if (!checkPermission(sender, "nac.list")) { return true; }
                 ListCommand command = new ListCommand(persistentData);
                 return command.execute(sender);
             }
 
             if (secondaryLabel.equalsIgnoreCase("allow")) {
-                if (!checkPermission(sender, "nac.allow")) { return false; }
+                if (!checkPermission(sender, "nac.allow")) { return true; }
                 AllowCommand command = new AllowCommand(uuidChecker, persistentData);
                 return command.execute(sender, arguments);
             }
 
             if (secondaryLabel.equalsIgnoreCase("deny")) {
-                if (!checkPermission(sender, "nac.deny")) { return false; }
+                if (!checkPermission(sender, "nac.deny")) { return true; }
                 DenyCommand command = new DenyCommand(uuidChecker, persistentData);
                 return command.execute(sender, arguments);
             }
 
             if (secondaryLabel.equalsIgnoreCase("config")) {
-                if (!checkPermission(sender, "nac.config")) { return false; }
+                if (!checkPermission(sender, "nac.config")) { return true; }
                 ConfigCommand command = new ConfigCommand(configService, argumentParser);
                 return command.execute(sender, arguments);
             }
