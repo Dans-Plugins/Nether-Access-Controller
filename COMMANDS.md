@@ -48,7 +48,7 @@ All commands use the `/nac` base command.
 
 ### /nac config set \<option\> \<value\>
 
-**Description:** Sets a configuration option to the specified value. Use single quotes around values that contain spaces.
+**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; an apostrophe inside the message ends it early (#60). Every other option takes a single word as its value.
 **Permission:** `nac.config`
 **Usage:** `/nac config set <option> <value>`
 **Example:** `/nac config set preventPortalUsage true`
