@@ -67,14 +67,14 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         Metrics metrics = new Metrics(this, pluginId);
 
         // usage reporting: one event now, one per command; see config.yml
-        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName())
+        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName(), getDescription().getVersion())
                 .key(configService.getUsageReportingKey())
                 .enabled(configService.isUsageReportingEnabled())
                 .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
         announceUsageReporting();
-        trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+        trace.report("startup");
     }
 
     /**
