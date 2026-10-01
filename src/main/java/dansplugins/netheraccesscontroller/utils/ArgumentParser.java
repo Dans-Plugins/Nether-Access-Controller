@@ -1,49 +1,25 @@
 package dansplugins.netheraccesscontroller.utils;
 
-import java.util.ArrayList;
-
 /**
  * @author Daniel McCoy Stephenson
  */
 public class ArgumentParser {
 
-    public ArrayList<String> getArgumentsInsideSingleQuotes(String[] args) {
-        ArrayList<String> toReturn = new ArrayList<>();
-
+    /**
+     * Returns the text between the first and the last single quote in the arguments, rejoined with
+     * single spaces, so an apostrophe inside the text is kept. Returns null if there are fewer than
+     * two single quotes.
+     */
+    public String getTextInsideOuterSingleQuotes(String[] args) {
         String argumentString = String.join(" ", args);
 
-        int index = 0;
-        while (true) {
-            int start = findIndexOfFirstSingleQuote(index, argumentString);
-            if (start == -1) {
-                break;
-            }
-            int end = findIndexOfFirstSingleQuote(start + 1, argumentString);
-
-            if (end == -1) {
-                break;
-            }
-
-            toReturn.add(argumentString.substring(start + 1, end));
-//            System.out.println("DEBUG: argument '" + toReturn.get(toReturn.size() - 1) + "' found!");
-            index = end + 1;
+        int start = argumentString.indexOf('\'');
+        int end = argumentString.lastIndexOf('\'');
+        if (start == -1 || end == start) {
+            return null;
         }
 
-        return toReturn;
-    }
-
-    private int findIndexOfFirstSingleQuote(int startingIndex, String argumentString) {
-
-        for (int i = startingIndex; i < argumentString.length(); i++) {
-
-            if (argumentString.charAt(i) == '\'') {
-//                System.out.println("DEBUG: first index of a single quote character in '" + argumentString + "' is " + i);
-                return i;
-            }
-
-        }
-
-        return -1;
+        return argumentString.substring(start + 1, end);
     }
 
 }

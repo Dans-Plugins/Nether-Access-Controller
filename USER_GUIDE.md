@@ -52,7 +52,7 @@ By default, only portal creation is blocked. To also block portal usage:
 /nac config set denyCreationMessage 'You cannot create nether portals.'
 ```
 
-The message must be enclosed in single quotes, even when it is one word. Avoid apostrophes inside it for now: the first one is read as the closing quote and the rest of the message is dropped (#60).
+The message must be enclosed in single quotes, even when it is one word. Apostrophes inside the message are kept: everything between the first and the last single quote is used.
 
 ### Recovering an Unreadable Whitelist
 

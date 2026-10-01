@@ -48,8 +48,8 @@ All commands use the `/nac` base command.
 
 ### /nac config set \<option\> \<value\>
 
-**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; an apostrophe inside the message ends it early (#60). Every other option takes a single word as its value.
+**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; everything between the first and the last single quote is used, so apostrophes inside the message are kept. Every other option takes a single word as its value.
 **Permission:** `nac.config`
 **Usage:** `/nac config set <option> <value>`
 **Example:** `/nac config set preventPortalUsage true`
-**Example:** `/nac config set denyUsageMessage 'You cannot enter the nether.'`
+**Example:** `/nac config set denyUsageMessage 'You don't have access to the nether.'`
