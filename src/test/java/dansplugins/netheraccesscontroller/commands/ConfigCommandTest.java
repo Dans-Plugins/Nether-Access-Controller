@@ -119,10 +119,18 @@ class ConfigCommandTest {
     }
 
     @Test
-    void set_messageOption_takesOnlyTheFirstQuotedSection() {
+    void set_messageOption_keepsAnApostropheInsideTheMessage() {
+        boolean result = execute("set", "denyUsageMessage", "'You", "don't", "have", "access", "to", "the", "nether.'");
+
+        assertTrue(result);
+        assertEquals("You don't have access to the nether.", configService.value);
+    }
+
+    @Test
+    void set_messageOption_takesEverythingFromTheFirstQuoteToTheLast() {
         execute("set", "denyUsageMessage", "'first'", "'second'");
 
-        assertEquals("first", configService.value);
+        assertEquals("first' 'second", configService.value);
     }
 
     /**

@@ -5,8 +5,6 @@ import dansplugins.netheraccesscontroller.utils.ArgumentParser;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-
 /**
  * @author Daniel McCoy Stephenson
  */
@@ -38,12 +36,11 @@ public class ConfigCommand {
 
             String value;
             if (option.equalsIgnoreCase("denyUsageMessage") || option.equalsIgnoreCase("denyCreationMessage")) {
-                ArrayList<String> singleQuoteArgs = argumentParser.getArgumentsInsideSingleQuotes(args);
-                if (singleQuoteArgs.size() == 0) {
+                value = argumentParser.getTextInsideOuterSingleQuotes(args);
+                if (value == null) {
                     sender.sendMessage(ChatColor.RED + "New message must be in between single quotes.");
                     return false;
                 }
-                value = singleQuoteArgs.get(0);
             }
             else {
                 value = args[2];
