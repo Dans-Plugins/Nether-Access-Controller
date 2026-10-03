@@ -95,7 +95,11 @@ You can view the bStats page for the plugin [here](https://bstats.org/plugin/buk
 
 ## Usage reporting
 
-Usage reporting is on by default: NetherAccessController sends its name, version and command names (a `startup` event when it enables and a `command` event each time one of its commands is used) to <https://trace.danielstephenson.dev> so it is known which plugins are actually in use. Nothing about players, worlds, IPs or the server is sent, and nothing typed after a command is sent either.
+Usage reporting is on by default: NetherAccessController sends its name, version and command names (a `startup` event when it enables and a `command` event each time one of its commands is used) to <https://trace.danielstephenson.dev> so it is known which plugins are actually in use. Nothing about players, worlds or IPs is sent, and nothing typed after a command is sent either.
+
+Each event also carries a random server ID (the `server-id` line in `plugins/trace/config.yml`) so
+servers can be counted rather than events. It identifies no person, account or IP address; delete
+the line to get a new one.
 
 To turn it off:
 
