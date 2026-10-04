@@ -62,9 +62,12 @@ public class PersistentData {
         }
     }
 
+    /** Header printed above the whitelist by {@code /nac list}. */
+    static final String LIST_HEADER = "=== Players With Access To The Nether ===";
+
     public void sendListToSender(CommandSender sender) {
         if (allowedPlayers.size() > 0) {
-            sender.sendMessage(ChatColor.AQUA + "=== Players With Access To The Nether ==");
+            sender.sendMessage(ChatColor.AQUA + LIST_HEADER);
             for (UUID uuid : allowedPlayers) {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
                 sender.sendMessage(ChatColor.AQUA + player.getName());
