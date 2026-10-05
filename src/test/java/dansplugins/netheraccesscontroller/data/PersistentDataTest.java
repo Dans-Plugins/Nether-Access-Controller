@@ -164,4 +164,14 @@ class PersistentDataTest {
 
         assertFalse(persistentData.isPlayerAllowed(playerUUID));
     }
+
+    @Test
+    void listHeader_hasAsManyEqualsSignsOnEachSide() {
+        String header = PersistentData.LIST_HEADER;
+        String title = header.replaceAll("^=+ ", "").replaceAll(" =+$", "");
+        int leading = header.indexOf(title) - 1;
+        int trailing = header.length() - header.indexOf(title) - title.length() - 1;
+        assertEquals("Players With Access To The Nether", title);
+        assertEquals(leading, trailing);
+    }
 }
