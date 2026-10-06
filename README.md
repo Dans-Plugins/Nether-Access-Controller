@@ -107,7 +107,7 @@ To turn it off:
 - for every plugin on the server that reports this way: `enabled: false` in `plugins/trace/config.yml` (created the first time such a plugin enables)
 - for the whole server process: the environment variable `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1`
 
-Each startup logs whether reporting is on or, if it is off, why. Details: <https://github.com/Stephenson-Software/trace#usage-reporting>
+Each startup logs whether reporting is on or, if it is off, why. Details: <https://danielstephenson.dev/usage-reporting>
 
 ## Changelog
 

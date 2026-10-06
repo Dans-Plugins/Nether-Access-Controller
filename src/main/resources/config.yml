@@ -15,7 +15,7 @@
 #   - Environment: TRACE_USAGE_REPORTING=off or DO_NOT_TRACK=1 on the
 #     server process.
 # The reason reporting is off, if it is, is logged at startup.
-# Details: https://github.com/Stephenson-Software/trace#usage-reporting
+# Details: https://danielstephenson.dev/usage-reporting
 usage-reporting:
   enabled: true
   endpoint: https://trace.danielstephenson.dev

@@ -105,7 +105,7 @@ back on), or for the whole server process with the environment variable `TRACE_U
 or `DO_NOT_TRACK=1`. Each startup logs whether reporting is on or, if it is off, why. The
 `usage-reporting` block is written into `config.yml` on the first enable that finds it missing, so
 the switch is visible on servers upgraded from before it existed. Details:
-<https://github.com/Stephenson-Software/trace#usage-reporting>.
+<https://danielstephenson.dev/usage-reporting>.
 
 Servers upgraded from a version before this block existed do not need to add it: the plugin reads the
 bundled defaults for any key the file lacks, so reporting is active until it is turned off, and the
