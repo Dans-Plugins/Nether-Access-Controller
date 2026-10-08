@@ -1,5 +1,6 @@
 package dansplugins.netheraccesscontroller.listeners;
 
+import dansplugins.netheraccesscontroller.NetherAccessController;
 import dansplugins.netheraccesscontroller.data.PersistentData;
 import dansplugins.netheraccesscontroller.services.ConfigService;
 import org.bukkit.ChatColor;
@@ -25,8 +26,8 @@ class PlayerPortalEventListenerTest {
     private final FileConfiguration config = ListenerFixtures.defaultConfig();
     private final PersistentData persistentData = new PersistentData();
     private final ListenerFixtures.RecordingPlayer player = new ListenerFixtures.RecordingPlayer();
-    private final PlayerPortalEventListener listener = new PlayerPortalEventListener(
-            ListenerFixtures.pluginWith(config), new ConfigService(ListenerFixtures.pluginWith(config)), persistentData);
+    private final NetherAccessController plugin = ListenerFixtures.pluginWith(config);
+    private final PlayerPortalEventListener listener = new PlayerPortalEventListener(plugin, new ConfigService(plugin), persistentData);
 
     /**
      * The shipped default: only portal creation is controlled, so an existing portal admits anyone.

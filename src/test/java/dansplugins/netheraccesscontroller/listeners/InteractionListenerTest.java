@@ -1,5 +1,6 @@
 package dansplugins.netheraccesscontroller.listeners;
 
+import dansplugins.netheraccesscontroller.NetherAccessController;
 import dansplugins.netheraccesscontroller.data.PersistentData;
 import dansplugins.netheraccesscontroller.services.ConfigService;
 import org.bukkit.ChatColor;
@@ -28,8 +29,8 @@ class InteractionListenerTest {
     private final FileConfiguration config = ListenerFixtures.defaultConfig();
     private final PersistentData persistentData = new PersistentData();
     private final ListenerFixtures.RecordingPlayer player = new ListenerFixtures.RecordingPlayer();
-    private final InteractionListener listener = new InteractionListener(
-            ListenerFixtures.pluginWith(config), new ConfigService(ListenerFixtures.pluginWith(config)), persistentData);
+    private final NetherAccessController plugin = ListenerFixtures.pluginWith(config);
+    private final InteractionListener listener = new InteractionListener(plugin, new ConfigService(plugin), persistentData);
 
     /**
      * The shipped default: creation prevention is on, so lighting obsidian is refused.
