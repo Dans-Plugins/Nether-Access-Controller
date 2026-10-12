@@ -6,28 +6,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.2.2] – 2026-10-09
+
+### Added
+
+- Unit tests covering the two access checks, `PlayerPortalEventListener` and `InteractionListener`. They check that a player not on the whitelist is stopped and shown the configured deny message only while `preventPortalUsage`/`preventPortalCreation` is on, and that a whitelisted player is let through. They also check that end portals, other blocks and other held items are left alone, that flint and steel counts in either hand, and that left-clicking obsidian with flint and steel is refused as well. One test pins that a fire charge used on obsidian is not refused; that bypass is tracked in #81. They pin current behaviour; no plugin behaviour changes.
+
+## [2.2.1] – 2026-10-06
+
 ### Changed
 
 - The usage-reporting "Details" link (startup notice, `config.yml` and the docs) now points at https://danielstephenson.dev/usage-reporting, a public page; the previous link led to a private repository and returned 404 for everyone. The vendored trace client is now 0.6.1, which carries the same link in the `plugins/trace/config.yml` header it writes. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.6.1.
+
+## [2.2.0] – 2026-10-05
+
+### Added
+
+- Unit tests covering `/nac allow` and `/nac deny` in `AllowCommand` and `DenyCommand`: the usage and player-not-found refusals, that a player already allowed is not added to the whitelist a second time, that denying a player not on the whitelist is reported rather than performed, that other players' access is left unchanged, and that confirmations name the player as the server knows them. They pin current behaviour; no plugin behaviour changes.
+
+### Fixed
+
+- The header printed by `/nac list` now has three `=` on each side, `=== Players With Access To The Nether ===`, matching the plugin's other headers; it previously ended with two.
+
+## [2.1.0] – 2026-10-02
+
+### Added
+
+- Unit tests covering `/nac config` argument handling in `ConfigCommand` and the single-quote parsing in `ArgumentParser` that reads deny messages. They pin current behaviour. `COMMANDS.md` and `USER_GUIDE.md` now say what those tests show: the two deny-message options require single quotes even around one word, and no other option reads them.
+
+### Changed
+
+- Usage reporting now honours server-wide tags: a `tags:` block in `plugins/trace/config.yml` is added to every event sent by each plugin on the server that reports this way (the release gates write `ci: "true"` there, so test-server boots are left out of real-installation figures). Nothing changes for a server without a `tags:` block. The vendored trace client is updated from 0.2.0 to 0.3.0.
+
+### Fixed
+
+- An apostrophe inside a deny message no longer cuts the message short. `/nac config set denyUsageMessage 'You don't have access to the nether.'` previously stored `You don` and reported `String set.` in green, because the first `'` after the opening quote was read as the closing one. The message is now everything between the first and the last single quote, so apostrophes inside it are kept (#60).
+
+## [2.0.0] – 2026-09-22
 
 ### Added
 
 - The plugin now reports usage events — `startup` on enable, `command` on each use of `/nac` — to the author's trace server so it is known which plugins are in use. Events carry the plugin name, the event name, and the plugin version or command name; nothing about players or the server. Reporting runs off the main thread, never delays a tick, drops silently when the server is unreachable, and is turned off with `usage-reporting.enabled: false` in `config.yml` or `/nac config set usage-reporting.enabled false`. The plugin now ships a `config.yml` carrying the plugin's key, so reporting is active out of the box unless turned off — including on servers upgraded from a version before the `usage-reporting` block existed, whose `config.yml` is only rewritten on a version change: the plugin reads the bundled defaults for any key the file lacks
 - A `Dev Release` workflow, which republishes a rolling `dev` prerelease of `main` on every non-documentation push. This is what Dan's Plugin Manager's experimental channel installs from: `/dpm get netheraccesscontroller --experimental` reads `releases/tags/dev`, so without it there is nothing for that command to download. The prerelease is unreleased, unreviewed code and is marked as such.
-- Unit tests covering `/nac config` argument handling in `ConfigCommand` and the single-quote parsing in `ArgumentParser` that reads deny messages. They pin current behaviour. `COMMANDS.md` and `USER_GUIDE.md` now say what those tests show: the two deny-message options require single quotes even around one word, and no other option reads them.
-- Unit tests covering `/nac allow` and `/nac deny` in `AllowCommand` and `DenyCommand`: the usage and player-not-found refusals, that a player already allowed is not added to the whitelist a second time, that denying a player not on the whitelist is reported rather than performed, that other players' access is left unchanged, and that confirmations name the player as the server knows them. They pin current behaviour; no plugin behaviour changes.
-- Unit tests covering the two access checks, `PlayerPortalEventListener` and `InteractionListener`. They check that a player not on the whitelist is stopped and shown the configured deny message only while `preventPortalUsage`/`preventPortalCreation` is on, and that a whitelisted player is let through. They also check that end portals, other blocks and other held items are left alone, that flint and steel counts in either hand, and that left-clicking obsidian with flint and steel is refused as well. One test pins that a fire charge used on obsidian is not refused; that bypass is tracked in #81. They pin current behaviour; no plugin behaviour changes.
 
 ### Changed
 
 - Usage reporting is now disclosed at every startup: an INFO line says that NetherAccessController sends its name, version and command names to the trace server and how to turn it off, or, when it is off, why (`environment`, `server-wide config: plugins/trace/config.yml`, `config.yml` or `no key`). It can now also be turned off for every plugin on the server that reports this way with `enabled: false` in `plugins/trace/config.yml` (created by the first such plugin to enable), or for the whole server process with `TRACE_USAGE_REPORTING=off` / `DO_NOT_TRACK=1`. The `usage-reporting` block is written into an existing `config.yml` that lacks it, once, so the switch is visible on servers upgraded from before it existed. The README and `CONFIG.md` describe what is sent and every way to turn it off. Nothing about what is sent changed.
 - `ConfigService` no longer carries the unreachable integer and double branches of `/nac config set`, and lists `debugMode` through the same boolean accessor as the two options beside it. Option names are now compared exactly, matching the case-sensitive lookup that already rejects a differently-cased name before those comparisons are reached. No operator-visible behaviour changes.
-- Usage reporting now honours server-wide tags: a `tags:` block in `plugins/trace/config.yml` is added to every event sent by each plugin on the server that reports this way (the release gates write `ci: "true"` there, so test-server boots are left out of real-installation figures). Nothing changes for a server without a `tags:` block. The vendored trace client is updated from 0.2.0 to 0.3.0.
 
 ### Fixed
 
-- The header printed by `/nac list` now has three `=` on each side, `=== Players With Access To The Nether ===`, matching the plugin's other headers; it previously ended with two.
-- An apostrophe inside a deny message no longer cuts the message short. `/nac config set denyUsageMessage 'You don't have access to the nether.'` previously stored `You don` and reported `String set.` in green, because the first `'` after the opening quote was read as the closing one. The message is now everything between the first and the last single quote, so apostrophes inside it are kept (#60).
 - An unreadable `allowedPlayers.json` no longer displaces one that was set aside on an earlier occasion. The destination was the fixed path `allowedPlayers.json.unreadable`, and the rename replaced whatever was already there without a word, so a second unreadable save file destroyed the only copy of the first — the very file the rename exists to preserve. The destination is now numbered upwards (`allowedPlayers.json.unreadable.2`, `.3`, and so on) until a free one is found, the path used is named in the server log, and the rename is given up on rather than performed if no free destination exists.
 - `/nac list` and a bare `/nac` no longer report themselves to the server as having been used incorrectly. Both returned `false` from `onCommand` after doing what was asked of them, which is the value that asks the server to print the command's usage string. Nothing was printed in practice, because `plugin.yml` declares no `usage` key for the command; adding one would have made a successful `/nac list` start printing usage text after the whitelist.
 - `/nac config set` no longer accepts an unrecognised value for a boolean option. Any value other than `true` was previously stored as `false` and reported as `Boolean set.` in green, so `/nac config set preventPortalCreation yes` — or `1`, or `enabled`, or a mistyped `ture` — silently turned portal-creation enforcement off and let every player create nether portals. Only `true` and `false` are accepted now, in any casing; anything else is refused with a message naming the accepted values, and the stored value is left as it was.
