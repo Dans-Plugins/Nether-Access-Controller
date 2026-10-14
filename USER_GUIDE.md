@@ -54,6 +54,10 @@ By default, only portal creation is blocked. To also block portal usage:
 
 The message must be enclosed in single quotes, even when it is one word. Apostrophes inside the message are kept: everything between the first and the last single quote is used.
 
+### When the Whitelist Is Saved
+
+Changes made with `/nac allow` and `/nac deny` take effect at once, but the whitelist is only written to `plugins/NetherAccessController/allowedPlayers.json` when the plugin is disabled, normally when the server stops. If the server crashes or is killed, every change made since it last started is lost. Stop the server cleanly (`/stop`) to keep them.
+
 ### Recovering an Unreadable Whitelist
 
 The whitelist is stored in `plugins/NetherAccessController/allowedPlayers.json`. If that file cannot be read at startup — because it is empty, or was truncated by a crash part-way through a save — the plugin reports it in the server log and renames it to `allowedPlayers.json.unreadable`, then starts with an empty whitelist so that portal restrictions stay in force.
