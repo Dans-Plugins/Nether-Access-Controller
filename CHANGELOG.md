@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The documentation now says what the code already does in five places it was silent. `COMMANDS.md`: `/nac allow` and `/nac deny` only find players who have joined the server before, and `/nac config set` option names are case-sensitive. `CONFIG.md`: hand edits to `config.yml` take effect on restart and are overwritten if `/nac config set` is used while the server runs, and `preventPortalCreation` does not stop a portal lit with a fire charge (#81). `USER_GUIDE.md`: the whitelist is only written to disk when the server stops, so a crash loses changes made since startup. No plugin behaviour changes.
+
 ## [2.2.2] – 2026-10-09
 
 ### Added

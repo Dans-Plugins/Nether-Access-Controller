@@ -2,6 +2,10 @@
 
 Configuration can be modified in-game using `/nac config set <option> <value>` or by editing `plugins/NetherAccessController/config.yml` directly.
 
+A change made with `/nac config set` takes effect at once. The file is only read when the plugin enables, so a change made by editing it takes effect after the server is restarted. Edit the file while the server is stopped: if `/nac config set` is used while the server is running, the plugin's copy of the config, which lacks the hand edits, is written over the file straight away and again when the server stops.
+
+Option names are case-sensitive in both places.
+
 Options marked below as boolean accept only `true` or `false`, in any casing. Any other value is refused by `/nac config set` and the current setting is kept.
 
 ## debugMode
@@ -32,7 +36,7 @@ preventPortalUsage: false
 
 **Type:** boolean
 **Default:** `true`
-**Description:** When enabled, prevents players who are not on the whitelist from creating nether portals with flint and steel on obsidian.
+**Description:** When enabled, prevents players who are not on the whitelist from creating nether portals with flint and steel on obsidian. Any click on obsidian is refused while flint and steel is held in either hand. A portal lit with a fire charge, or by a dispenser or spreading fire, is not prevented (#81).
 
 **Example:**
 
