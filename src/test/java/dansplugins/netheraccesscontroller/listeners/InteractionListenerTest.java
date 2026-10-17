@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Covers {@link InteractionListener#handle}, which decides whether a player may light a nether
- * portal: that a player not on the whitelist who uses flint and steel on obsidian is stopped and
- * told why while preventPortalCreation is on, that a whitelisted player is not, and which
+ * portal: that a player not on the whitelist who uses flint and steel or a fire charge on obsidian
+ * is stopped and told why while preventPortalCreation is on, that a whitelisted player is not, and which
  * interactions are left alone. They pin current behaviour; see ListenerFixtures for how the plugin
  * is stood up without a server.
  */
@@ -126,18 +126,40 @@ class InteractionListenerTest {
     }
 
     /**
-     * Characterizes current behaviour: only flint and steel is recognised as a way of lighting a
-     * portal, so a fire charge used on obsidian is not refused.
+     * A fire charge lights a portal frame just as flint and steel does, so it is refused too (#81).
      */
     @Test
-    void fireChargeOnObsidian_isNotRefused() {
+    void fireChargeOnObsidian_isRefusedForAPlayerNotOnTheWhitelist() {
+        player.mainHand = new ItemStack(Material.FIRE_CHARGE);
+        PlayerInteractEvent event = interact(Action.RIGHT_CLICK_BLOCK, ListenerFixtures.block(Material.OBSIDIAN));
+
+        listener.handle(event);
+
+        assertTrue(event.isCancelled());
+        assertEquals(1, player.messages.size());
+        assertEquals(ChatColor.RED + "You're unable to create nether portals.", player.messages.get(0));
+    }
+
+    @Test
+    void fireChargeInTheOffHand_isRefusedForAPlayerNotOnTheWhitelist() {
+        player.offHand = new ItemStack(Material.FIRE_CHARGE);
+        PlayerInteractEvent event = interact(Action.RIGHT_CLICK_BLOCK, ListenerFixtures.block(Material.OBSIDIAN));
+
+        listener.handle(event);
+
+        assertTrue(event.isCancelled());
+    }
+
+    @Test
+    void fireChargeOnObsidian_isAllowedForAWhitelistedPlayer() {
+        persistentData.setPlayerAllowed(player.uuid, true);
         player.mainHand = new ItemStack(Material.FIRE_CHARGE);
         PlayerInteractEvent event = interact(Action.RIGHT_CLICK_BLOCK, ListenerFixtures.block(Material.OBSIDIAN));
 
         listener.handle(event);
 
         assertFalse(event.isCancelled());
-        assertTrue(player.messages.isEmpty());
+        assertEquals(ChatColor.GREEN + "You light the portal.", player.messages.get(0));
     }
 
     /**
