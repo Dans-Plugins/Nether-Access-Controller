@@ -36,7 +36,7 @@ preventPortalUsage: false
 
 **Type:** boolean
 **Default:** `true`
-**Description:** When enabled, prevents players who are not on the whitelist from creating nether portals with flint and steel on obsidian. Any click on obsidian is refused while flint and steel is held in either hand. A portal lit with a fire charge, or by a dispenser or spreading fire, is not prevented (#81).
+**Description:** When enabled, prevents players who are not on the whitelist from creating nether portals with flint and steel or a fire charge on obsidian. Any click on obsidian is refused while flint and steel or a fire charge is held in either hand. A portal lit without a player, by a dispenser or spreading fire, is not prevented (#89).
 
 **Example:**
 

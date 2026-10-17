@@ -50,7 +50,7 @@ public class InteractionListener implements Listener {
         ItemStack itemInMainHand = event.getPlayer().getInventory().getItemInMainHand();
         ItemStack itemInOffHand = event.getPlayer().getInventory().getItemInOffHand();
 
-        if (itemInMainHand.getType() != Material.FLINT_AND_STEEL && itemInOffHand.getType() != Material.FLINT_AND_STEEL) {
+        if (!isPortalIgniter(itemInMainHand) && !isPortalIgniter(itemInOffHand)) {
             return;
         }
 
@@ -62,5 +62,12 @@ public class InteractionListener implements Listener {
             event.setCancelled(true);
         }
 
+    }
+
+    /**
+     * Flint and steel and fire charges are the two items a player can light a portal frame with.
+     */
+    private boolean isPortalIgniter(ItemStack item) {
+        return item.getType() == Material.FLINT_AND_STEEL || item.getType() == Material.FIRE_CHARGE;
     }
 }
