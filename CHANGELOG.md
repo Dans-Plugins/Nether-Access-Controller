@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- `preventPortalCreation` now also stops a player who is not on the whitelist from lighting a portal with a fire charge; before, only flint and steel was refused, so a fire charge got round the setting. A fire charge in either hand counts, the same as flint and steel, and whitelisted players are unaffected. Portals lit without a player (a dispenser, spreading fire) are still not prevented (#81).
+- `preventPortalCreation` now also stops a player who is not on the whitelist from lighting a portal with a fire charge; before, only flint and steel was refused, so a fire charge got round the setting. A fire charge in either hand counts, the same as flint and steel, and whitelisted players are unaffected. Portals lit without a player (a dispenser, spreading fire) are still not prevented; that is tracked in #89 (#81).
 
 ### Changed
 
