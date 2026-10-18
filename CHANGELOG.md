@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Unit tests covering `UUIDChecker`, which turns the name given to `/nac allow` and `/nac deny` into a player's UUID. They check that online players are searched before offline ones, that names match regardless of case, that an unknown name finds no one, and that an offline player with no recorded name is skipped instead of ending the search. They pin current behaviour; no plugin behaviour changes.
+
 ### Fixed
 
 - `preventPortalCreation` now also stops a player who is not on the whitelist from lighting a portal with a fire charge; before, only flint and steel was refused, so a fire charge got round the setting. A fire charge in either hand counts, the same as flint and steel, and whitelisted players are unaffected. Portals lit without a player (a dispenser, spreading fire) are still not prevented; that is tracked in #89 (#81).
