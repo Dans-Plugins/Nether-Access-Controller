@@ -1,5 +1,9 @@
 # Nether Access Controller
 
+![Turning on portal control, allowing one player, and another player being refused at a nether portal](docs/images/portal-denied.png)
+
+*Real in-game output from Nether Access Controller 2.2.2 on a local throwaway Paper 1.21.11 test server: the commands were typed by a scripted bot client, and the chat it received is drawn as Minecraft-style chat (typed commands appear in the input bars; grey lines say what happened between commands).*
+
 ## Description
 
 Nether Access Controller is a Minecraft plugin that allows operators to control access to the nether. It is essentially a whitelist for nether access. Operators can allow or deny access and view who has access. Both nether portal creation and usage can be prevented through the use of this tool.
