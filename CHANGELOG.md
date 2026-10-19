@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - The documentation now says what the code already does in five places it was silent. `COMMANDS.md`: `/nac allow` and `/nac deny` only find players who have joined the server before, and `/nac config set` option names are case-sensitive. `CONFIG.md`: hand edits to `config.yml` take effect on restart and are overwritten if `/nac config set` is used while the server runs, and `preventPortalCreation` does not stop a portal lit with a fire charge (#81). `USER_GUIDE.md`: the whitelist is only written to disk when the server stops, so a crash loses changes made since startup. No plugin behaviour changes.
+- The documentation now covers four more things the code already does. `CONFIG.md` documents the `version` key, which `/nac config show` lists but `/nac config set` refuses, and the `You step through the portal.` and `You light the portal.` messages a whitelisted player is shown while `preventPortalUsage` or `preventPortalCreation` is on. `COMMANDS.md` lists exactly which settings `/nac config show` displays (it had said all settings, but `usage-reporting.endpoint` and `usage-reporting.key` are not shown) and the message `/nac list` shows for an empty whitelist. No plugin behaviour changes.
 
 ## [2.2.2] – 2026-10-09
 

@@ -8,6 +8,18 @@ Option names are case-sensitive in both places.
 
 Options marked below as boolean accept only `true` or `false`, in any casing. Any other value is refused by `/nac config set` and the current setting is kept.
 
+## version
+
+**Type:** string
+**Default:** the running plugin version
+**Description:** The plugin version that last wrote the file. It is not a setting: `/nac config set version` is refused with `Cannot set version.`, and a hand-edited value is replaced by the running version on the next start. A file whose version differs from the running plugin, or that has none, is one of the cases in which the plugin writes any missing option back into the file with its default.
+
+**Example:**
+
+```yaml
+version: 2.2.2
+```
+
 ## debugMode
 
 **Type:** boolean
@@ -24,7 +36,7 @@ debugMode: false
 
 **Type:** boolean
 **Default:** `false`
-**Description:** When enabled, prevents players who are not on the whitelist from using existing nether portals. If disabled, only portal creation is controlled.
+**Description:** When enabled, prevents players who are not on the whitelist from using existing nether portals. If disabled, only portal creation is controlled. While it is enabled, a whitelisted player who goes through a nether portal is told `You step through the portal.`; end portals are not affected.
 
 **Example:**
 
@@ -36,7 +48,7 @@ preventPortalUsage: false
 
 **Type:** boolean
 **Default:** `true`
-**Description:** When enabled, prevents players who are not on the whitelist from creating nether portals with flint and steel or a fire charge on obsidian. Any click on obsidian is refused while flint and steel or a fire charge is held in either hand. A portal lit without a player, by a dispenser or spreading fire, is not prevented (#89).
+**Description:** When enabled, prevents players who are not on the whitelist from creating nether portals with flint and steel or a fire charge on obsidian. Any click on obsidian is refused while flint and steel or a fire charge is held in either hand; the same click by a whitelisted player is allowed and they are told `You light the portal.`, whether or not a portal is actually lit. A portal lit without a player, by a dispenser or spreading fire, is not prevented (#89).
 
 **Example:**
 
