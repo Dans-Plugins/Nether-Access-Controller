@@ -34,7 +34,7 @@ All commands use the `/nac` base command.
 
 ### /nac list
 
-**Description:** Displays all players currently on the nether access whitelist.
+**Description:** Displays all players currently on the nether access whitelist. When the whitelist is empty, it shows `No one is allowed to access the nether.`
 **Permission:** `nac.list`
 **Usage:** `/nac list`
 
@@ -42,7 +42,7 @@ All commands use the `/nac` base command.
 
 ### /nac config show
 
-**Description:** Displays all current configuration settings and their values.
+**Description:** Displays the current values of `version`, `debugMode`, `preventPortalUsage`, `preventPortalCreation`, `denyUsageMessage`, `denyCreationMessage` and `usage-reporting.enabled`. `usage-reporting.endpoint` and `usage-reporting.key` are not shown; read them in `config.yml`.
 **Permission:** `nac.config`
 **Usage:** `/nac config show`
 
