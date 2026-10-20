@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Covers the UUID-based whitelist logic in {@link PersistentData}, which is the
  * data structure backing every allow/deny access decision made by the plugin.
- * Methods that require a live Bukkit server (e.g. sendListToSender) are out of
- * scope here and are covered by manual validation instead.
+ * sendListToSender looks players up through the Bukkit server, so it is covered
+ * through /nac list in ListCommandTest instead.
  */
 class PersistentDataTest {
 

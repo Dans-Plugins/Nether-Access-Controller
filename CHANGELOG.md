@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Unit tests covering `UUIDChecker`, which turns the name given to `/nac allow` and `/nac deny` into a player's UUID. They check that online players are searched before offline ones, that names match regardless of case, that an unknown name finds no one, and that an offline player with no recorded name is skipped instead of ending the search. They pin current behaviour; no plugin behaviour changes.
+- Unit tests covering what `/nac list` and `/nac help` print. They check that `/nac list` shows the header and then each whitelisted player by the name the server knows them by, in the order they were allowed, or a single line when the whitelist is empty, and that `/nac help` lists every sub-command with its syntax. One test pins that a whitelisted player with no recorded name is listed as `null`; that is tracked in #94. They pin current behaviour; no plugin behaviour changes.
 
 ### Fixed
 
