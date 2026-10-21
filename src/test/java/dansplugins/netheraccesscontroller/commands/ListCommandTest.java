@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Covers what {@link ListCommand#execute} prints, which is the whitelist as
  * {@link PersistentData#sendListToSender} formats it: a header followed by one line per allowed
- * player, named as the server knows them, or a single line when no one is allowed.
+ * player, named as the server knows them (or by UUID when it has no name recorded), or a single line when no one is allowed.
  *
  * The Bukkit server behind getOfflinePlayer is the shared {@link StubServer}.
  */
@@ -50,19 +50,19 @@ class ListCommandTest {
     }
 
     /**
-     * Characterizes current behavior: the server answers getOfflinePlayer for any UUID, with a
-     * player whose name is null when it has no name recorded for that UUID, and the list prints
-     * that null as the text "null" rather than skipping the entry or showing the UUID.
+     * The server answers getOfflinePlayer for any UUID, with a player whose name is null when it
+     * has no name recorded for that UUID; the list shows that entry's UUID instead.
      */
     @Test
-    void allowedPlayerWithNoRecordedName_isPrintedAsNull() {
-        persistentData.setPlayerAllowed(UUID.randomUUID(), true);
+    void allowedPlayerWithNoRecordedName_isPrintedAsUuid() {
+        UUID uuid = UUID.randomUUID();
+        persistentData.setPlayerAllowed(uuid, true);
 
         execute();
 
         assertEquals(Arrays.asList(
                 ChatColor.AQUA + "=== Players With Access To The Nether ===",
-                ChatColor.AQUA + "null"), sender.messages);
+                ChatColor.AQUA + uuid.toString()), sender.messages);
     }
 
     private boolean execute() {

@@ -70,7 +70,8 @@ public class PersistentData {
             sender.sendMessage(ChatColor.AQUA + LIST_HEADER);
             for (UUID uuid : allowedPlayers) {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-                sender.sendMessage(ChatColor.AQUA + player.getName());
+                String name = player.getName();
+                sender.sendMessage(ChatColor.AQUA + (name != null ? name : uuid.toString()));
             }
         }
         else {
