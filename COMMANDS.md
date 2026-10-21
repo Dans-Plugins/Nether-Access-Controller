@@ -34,7 +34,7 @@ All commands use the `/nac` base command.
 
 ### /nac list
 
-**Description:** Displays all players currently on the nether access whitelist. When the whitelist is empty, it shows `No one is allowed to access the nether.`
+**Description:** Displays all players currently on the nether access whitelist. A whitelisted player whose name the server has not recorded is shown by UUID instead; `/nac deny` cannot reach such an entry by name, so it has to be removed from `allowedPlayers.json` while the server is stopped. When the whitelist is empty, it shows `No one is allowed to access the nether.`
 **Permission:** `nac.list`
 **Usage:** `/nac list`
 

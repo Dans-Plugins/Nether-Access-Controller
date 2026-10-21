@@ -70,7 +70,8 @@ public final class StubServer {
         }
     }
 
-    static CommandSender sender(RecordingSender recordingSender) {
+    static synchronized CommandSender sender(RecordingSender recordingSender) {
+        install();
         return proxy(CommandSender.class, recordingSender);
     }
 

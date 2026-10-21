@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- `/nac list` now shows a whitelisted player whose name the server has not recorded by their UUID; before, the line read `null`. This can happen when the server's player data is reset while `allowedPlayers.json` is kept, or when a UUID is added to that file by hand (#94).
 - `preventPortalCreation` now also stops a player who is not on the whitelist from lighting a portal with a fire charge; before, only flint and steel was refused, so a fire charge got round the setting. A fire charge in either hand counts, the same as flint and steel, and whitelisted players are unaffected. Portals lit without a player (a dispenser, spreading fire) are still not prevented; that is tracked in #89 (#81).
 
 ### Changed
