@@ -38,8 +38,8 @@ class CommandServiceTest {
     /**
      * The collaborators are null because no test in this class reaches a code path that
      * uses one: every denied sub-command returns before its command object is constructed,
-     * and the one permitted case exercises ConfigCommand's empty-argument branch, which
-     * returns before touching the config service.
+     * and the permitted cases that share this instance stop at help's fixed text or at the
+     * empty-argument branch of config, allow or deny, before touching a collaborator.
      */
     private final CommandService commandService = new CommandService(null, null, null, null, null);
 
@@ -110,6 +110,87 @@ class CommandServiceTest {
         RecordingSender sender = new RecordingSender();
 
         boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"nonsense"});
+
+        assertFalse(result);
+        assertEquals(1, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("doesn't recognize that command"));
+    }
+
+    @Test
+    void help_withPermission_reachesTheCommand() {
+        RecordingSender sender = new RecordingSender("nac.help");
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"help"});
+
+        assertTrue(result);
+        // The header proves HelpCommand ran rather than stopping at the permission gate.
+        assertEquals(6, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("=== Nether Access Controller Commands ==="));
+    }
+
+    /**
+     * Also pins that the sub-command name is stripped before the arguments reach the command:
+     * were "allow" passed on as the player name, AllowCommand would go on to look it up with the
+     * null UUIDChecker and throw instead of printing its usage line.
+     */
+    @Test
+    void allow_withPermission_reachesTheCommandWithoutTheSubCommandName() {
+        RecordingSender sender = new RecordingSender("nac.allow");
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"allow"});
+
+        assertFalse(result);
+        assertEquals(1, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("Usage: /nac allow (playerName)"));
+    }
+
+    @Test
+    void deny_withPermission_reachesTheCommandWithoutTheSubCommandName() {
+        RecordingSender sender = new RecordingSender("nac.deny");
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"deny"});
+
+        assertFalse(result);
+        assertEquals(1, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("Usage: /nac deny (playerName)"));
+    }
+
+    @Test
+    void subCommandName_isMatchedRegardlessOfCase() {
+        RecordingSender sender = new RecordingSender("nac.list");
+        CommandService commandService = new CommandService(null, new PersistentData(), null, null, null);
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"LiSt"});
+
+        assertTrue(result);
+        assertEquals(1, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("No one is allowed to access the nether."));
+    }
+
+    /**
+     * Matching the sub-command without regard to case must not also skip its permission node.
+     */
+    @Test
+    void subCommandName_inAnotherCase_isStillPermissionChecked() {
+        RecordingSender sender = new RecordingSender();
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "nac", new String[]{"CONFIG", "set", "preventPortalCreation", "false"});
+
+        assertTrue(result);
+        assertEquals(1, sender.messages.size());
+        assertTrue(sender.messages.get(0).contains("nac.config"));
+    }
+
+    /**
+     * A label the plugin does not own is refused before any sub-command is looked at, even for a
+     * sender holding that sub-command's node.
+     */
+    @Test
+    void unrecognisedLabel_doesNotReachTheSubCommand() {
+        RecordingSender sender = new RecordingSender("nac.list");
+        CommandService commandService = new CommandService(null, new PersistentData(), null, null, null);
+
+        boolean result = commandService.interpretCommand(senderFor(sender), "other", new String[]{"list"});
 
         assertFalse(result);
         assertEquals(1, sender.messages.size());
