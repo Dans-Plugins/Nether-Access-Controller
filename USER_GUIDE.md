@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- A Spigot or Paper Minecraft server (API version 1.13 or later)
+- A Spigot or Paper Minecraft server running one of the versions listed in [`minecraft-versions.json`](minecraft-versions.json) (currently 1.19.4, 1.21.11, 26.2 and 26.3). Other versions from 1.19.4 onwards are expected to work but are not tested.
 - Operator (op) permissions on the server
 
 ## First Steps
