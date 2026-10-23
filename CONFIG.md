@@ -11,13 +11,13 @@ Options marked below as boolean accept only `true` or `false`, in any casing. An
 ## version
 
 **Type:** string
-**Default:** the running plugin version
-**Description:** The plugin version that last wrote the file. It is not a setting: `/nac config set version` is refused with `Cannot set version.`, and a hand-edited value is replaced by the running version on the next start. A file whose version differs from the running plugin, or that has none, is one of the cases in which the plugin writes any missing option back into the file with its default.
+**Default:** the running plugin version, prefixed with `v`
+**Description:** The plugin version that last wrote the file, written with a leading `v` (for example `v2.2.2`), which is also how `/nac config show` displays it. It is not a setting: `/nac config set version` is refused with `Cannot set version.`, and a hand-edited value is replaced by the running version on the next start. A file whose version differs from the running plugin, or that has none, is one of the cases in which the plugin writes any missing option back into the file with its default.
 
 **Example:**
 
 ```yaml
-version: 2.2.2
+version: v2.2.2
 ```
 
 ## debugMode

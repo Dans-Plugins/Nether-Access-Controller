@@ -1,6 +1,6 @@
 # Commands Reference
 
-All commands use the `/nac` base command.
+All commands use the `/nac` base command. Sub-command names are matched without regard to case. A sub-command that is not listed below is answered with `Nether Access Controller doesn't recognize that command.`
 
 ## General Commands
 
