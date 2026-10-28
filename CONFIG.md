@@ -111,6 +111,8 @@ When the plugin is enabled, and each time `/nac` is used, a small event is sent 
 [trace](https://github.com/Stephenson-Software/trace-client-java) server so it is known which plugins
 are actually in use. An event carries the plugin's name, the event name (`startup` or `command`), the plugin
 version, and for a `command` event the command name, plus a random server ID (the `server-id` line in `plugins/trace/config.yml`, which identifies no person, account or IP address; deleting the line gets a new one) — nothing about players or the world.
+Identical events within 60 seconds of the first are counted and sent as one event, tagged
+`coalesced` with the count; `startup` is never held back.
 Sending happens off the main thread, never delays a tick, and is dropped silently if the server
 cannot be reached. Set `usage-reporting.enabled` to `false` to turn it off, in `config.yml` or with
 `/nac config set usage-reporting.enabled false`.
