@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Usage reporting now sends repeated identical events as one. The first report of an event is sent at once; identical reports in the next 60 seconds are counted and sent as a single event tagged `coalesced` with the count, any count still open is sent when the plugin disables, and `startup` is never held back. Apart from that tag and count, what an event carries is unchanged, and so is how reporting is turned off. The vendored trace client is updated from 0.6.1 to 0.7.0. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.7.0.
+
+## [2.3.0] – 2026-10-28
+
 ### Added
 
 - Unit tests covering `UUIDChecker`, which turns the name given to `/nac allow` and `/nac deny` into a player's UUID. They check that online players are searched before offline ones, that names match regardless of case, that an unknown name finds no one, and that an offline player with no recorded name is skipped instead of ending the search. They pin current behaviour; no plugin behaviour changes.
