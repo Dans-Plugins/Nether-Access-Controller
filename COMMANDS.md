@@ -48,7 +48,7 @@ All commands use the `/nac` base command. Sub-command names are matched without 
 
 ### /nac config set \<option\> \<value\>
 
-**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; everything between the first and the last single quote is used, so apostrophes inside the message are kept. Every other option takes a single word as its value. Option names are case-sensitive and must be spelled as `/nac config show` lists them: `preventportalusage` is refused with `That config option wasn't found.` The new value takes effect at once and is written to `config.yml` straight away.
+**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; everything between the first and the last single quote is used, so apostrophes inside the message are kept. Every other option takes a single word as its value. Option names are case-sensitive and must be spelled as `/nac config show` lists them: `preventportalusage` is refused with `That config option wasn't found.` The new value is written to `config.yml` straight away and takes effect at once, except for the `usage-reporting` options, which take effect after the server is restarted (#105).
 **Permission:** `nac.config`
 **Usage:** `/nac config set <option> <value>`
 **Example:** `/nac config set preventPortalUsage true`
