@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Unit tests covering how the plugin writes the options into `config.yml` on first run and on every upgrade. They check that a fresh install gets every option with its default, including `preventPortalCreation: true`, that options already set in the file are kept, that the recorded `version` is replaced by the running one, and that the bundled `usage-reporting` block is written into a file that lacks it. They pin current behaviour; no plugin behaviour changes.
+
 ### Changed
 
 - `README.md`, `CONFIG.md` and the comment at the top of the bundled `config.yml` no longer say that a `command` event is sent each time a command is used. Since 2.3.1 only commands run by a player are reported; console, command-block and plugin-dispatched commands are not. No plugin behaviour changes.

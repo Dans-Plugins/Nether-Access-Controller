@@ -27,6 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * false — turns preventPortalCreation off and lets every player create nether portals, whitelist
  * or not. Each unrecognised value is therefore asserted to be both refused and not written.
  *
+ * It also covers {@link ConfigService#saveMissingConfigDefaultsIfNotPresent}, which writes the
+ * options into config.yml on first run and on every upgrade, and so decides what a fresh install
+ * enforces.
+ *
  * The plugin itself cannot be constructed outside a live Bukkit server, so an in-memory
  * {@link YamlConfiguration} is supplied in its place and the save is suppressed. {@link
  * CommandSender} is stubbed with a {@link Proxy} rather than a mocking library, matching
@@ -35,9 +39,91 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ConfigServiceTest {
 
+    /** Distinct from the v2.0.0 in {@link #defaultConfig()}, so that a replaced version is observable. */
+    private static final String RUNNING_VERSION = "v9.8.7";
+
     private final FileConfiguration config = defaultConfig();
     private final RecordingSender sender = new RecordingSender();
-    private final ConfigService configService = new InMemoryConfigService(config);
+    private final InMemoryConfigService configService = new InMemoryConfigService(config);
+
+    /**
+     * The first enable on a server has no config.yml options yet, and this is what writes them.
+     * preventPortalCreation is the one that matters: it must come out true, or a fresh install
+     * lets every player create nether portals until an operator notices. The file is read back
+     * from its saved form because copyDefaults only takes effect when the file is written.
+     */
+    @Test
+    void saveMissingConfigDefaults_onAFileWithNoOptions_writesEveryOptionWithItsDefault() {
+        FileConfiguration empty = new YamlConfiguration();
+        InMemoryConfigService service = new InMemoryConfigService(empty);
+
+        service.saveMissingConfigDefaultsIfNotPresent();
+
+        YamlConfiguration written = reloaded(empty);
+        assertTrue(written.isBoolean("preventPortalCreation"));
+        assertTrue(written.getBoolean("preventPortalCreation"),
+                "A fresh install must prevent portal creation by players who are not on the whitelist");
+        assertTrue(written.isBoolean("preventPortalUsage"));
+        assertFalse(written.getBoolean("preventPortalUsage"));
+        assertTrue(written.isBoolean("debugMode"));
+        assertFalse(written.getBoolean("debugMode"));
+        assertEquals("You're unable to use nether portals.", written.getString("denyUsageMessage"));
+        assertEquals("You're unable to create nether portals.", written.getString("denyCreationMessage"));
+        assertEquals(RUNNING_VERSION, written.getString("version"));
+        assertEquals(1, service.saves);
+    }
+
+    /**
+     * The method also runs on every upgrade, so an option an operator has already set must
+     * survive it. Each value here differs from its default, so that an overwrite would show.
+     */
+    @Test
+    void saveMissingConfigDefaults_keepsEveryOptionAlreadyInTheFile() {
+        config.set("debugMode", true);
+        config.set("preventPortalUsage", true);
+        config.set("preventPortalCreation", false);
+        config.set("denyUsageMessage", "Keep out.");
+        config.set("denyCreationMessage", "No portals for you.");
+
+        configService.saveMissingConfigDefaultsIfNotPresent();
+
+        YamlConfiguration written = reloaded(config);
+        assertTrue(written.getBoolean("debugMode"));
+        assertTrue(written.getBoolean("preventPortalUsage"));
+        assertFalse(written.getBoolean("preventPortalCreation"));
+        assertEquals("Keep out.", written.getString("denyUsageMessage"));
+        assertEquals("No portals for you.", written.getString("denyCreationMessage"));
+    }
+
+    /**
+     * CONFIG.md says that a hand-edited version is replaced by the running version on the next
+     * start. The next start reaches this method because the two versions differ.
+     */
+    @Test
+    void saveMissingConfigDefaults_replacesARecordedVersionWithTheRunningOne() {
+        configService.saveMissingConfigDefaultsIfNotPresent();
+
+        assertEquals(RUNNING_VERSION, config.getString("version"));
+        assertEquals(RUNNING_VERSION, reloaded(config).getString("version"));
+    }
+
+    /**
+     * onEnable calls this method a second time when the file has no usage-reporting block, so
+     * that the block becomes visible in config.yml on a server upgraded from before it existed.
+     * That only works if the save copies the bundled defaults into the file.
+     */
+    @Test
+    void saveMissingConfigDefaults_writesTheBundledUsageReportingBlockIntoTheFile() {
+        config.setDefaults(bundledConfig());
+        assertFalse(config.isSet("usage-reporting"));
+
+        configService.saveMissingConfigDefaultsIfNotPresent();
+
+        YamlConfiguration written = reloaded(config);
+        assertTrue(written.isSet("usage-reporting"));
+        assertTrue(written.getBoolean("usage-reporting.enabled"));
+        assertEquals(bundledConfig().getString("usage-reporting.key"), written.getString("usage-reporting.key"));
+    }
 
     @Test
     void setConfigOption_withTrue_storesTrue() {
@@ -285,6 +371,14 @@ class ConfigServiceTest {
         return YamlConfiguration.loadConfiguration(new InputStreamReader(bundled, StandardCharsets.UTF_8));
     }
 
+    /**
+     * The configuration as it would be read back from the file it saves to, with no defaults
+     * behind it, so that only what was actually written is seen.
+     */
+    private static YamlConfiguration reloaded(FileConfiguration config) {
+        return YamlConfiguration.loadConfiguration(new StringReader(((YamlConfiguration) config).saveToString()));
+    }
+
     private void assertRefused(String value, String option) {
         assertTrue(lastMessage().contains(value),
                 "The refusal should name the value that was rejected");
@@ -324,6 +418,7 @@ class ConfigServiceTest {
      */
     private static class InMemoryConfigService extends ConfigService {
         private final FileConfiguration config;
+        private int saves = 0;
 
         InMemoryConfigService(FileConfiguration config) {
             super(null);
@@ -338,6 +433,12 @@ class ConfigServiceTest {
         @Override
         void saveConfig() {
             // There is no file to write to; the assertions read the configuration directly.
+            saves++;
+        }
+
+        @Override
+        String getRunningVersion() {
+            return RUNNING_VERSION;
         }
     }
 

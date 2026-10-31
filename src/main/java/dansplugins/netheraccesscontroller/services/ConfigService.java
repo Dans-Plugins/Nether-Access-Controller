@@ -38,10 +38,10 @@ public class ConfigService {
     public void saveMissingConfigDefaultsIfNotPresent() {
         // set version
         if (!getConfig().isString("version")) {
-            getConfig().addDefault("version", netherAccessController.getVersion());
+            getConfig().addDefault("version", getRunningVersion());
         }
         else {
-            getConfig().set("version", netherAccessController.getVersion());
+            getConfig().set("version", getRunningVersion());
         }
 
         // save config options
@@ -61,7 +61,7 @@ public class ConfigService {
             getConfig().set("preventPortalCreation", true);
         }
         getConfig().options().copyDefaults(true);
-        netherAccessController.saveConfig();
+        saveConfig();
     }
 
     public void setConfigOption(String option, String value, CommandSender sender) {
@@ -145,6 +145,14 @@ public class ConfigService {
      */
     void saveConfig() {
         netherAccessController.saveConfig();
+    }
+
+    /**
+     * The version saveMissingConfigDefaultsIfNotPresent records in the file. Package-private for
+     * the same reason as saveConfig: a test supplies it in place of a live plugin.
+     */
+    String getRunningVersion() {
+        return netherAccessController.getVersion();
     }
 
     public int getInt(String option) {
