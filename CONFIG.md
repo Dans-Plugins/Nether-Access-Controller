@@ -2,7 +2,7 @@
 
 Configuration can be modified in-game using `/nac config set <option> <value>` or by editing `plugins/NetherAccessController/config.yml` directly.
 
-A change made with `/nac config set` takes effect at once, except for the three `usage-reporting` options, which are read only when the plugin enables: a change to them is saved straight away but takes effect after the server is restarted (#105). The file is only read when the plugin enables, so a change made by editing it takes effect after the server is restarted. Edit the file while the server is stopped: if `/nac config set` is used while the server is running, the plugin's copy of the config, which lacks the hand edits, is written over the file straight away and again when the server stops.
+A change made with `/nac config set` takes effect at once. The file is only read when the plugin enables, so a change made by editing it takes effect after the server is restarted. Edit the file while the server is stopped: if `/nac config set` is used while the server is running, the plugin's copy of the config, which lacks the hand edits, is written over the file straight away and again when the server stops.
 
 Option names are case-sensitive in both places.
 
@@ -114,10 +114,12 @@ version, and for a `command` event the command name, plus a random server ID (th
 Identical events within 60 seconds of the first are counted and sent as one event, tagged
 `coalesced` with the count; `startup` is never held back.
 Sending happens off the main thread, never delays a tick, and is dropped silently if the server
-cannot be reached. Set `usage-reporting.enabled` to `false` to turn it off, in `config.yml` or with
-`/nac config set usage-reporting.enabled false`. Either way, reporting stops only after the server is
-restarted: `/nac config set` saves the new value and `/nac config show` lists it at once, but events
-keep being sent until the plugin next enables (#105).
+cannot be reached. Set `usage-reporting.enabled` to `false` to turn it off, with
+`/nac config set usage-reporting.enabled false`, which stops reporting at once, or in `config.yml`,
+which takes effect after the server is restarted. A count held for commands run before the change is
+sent as it takes effect, and nothing is sent after that. A change to any `usage-reporting` option
+made with `/nac config set` is logged to the console the same way as at startup, because the switches
+below can still keep reporting off.
 
 It can also be turned off for every plugin on the server that reports this way, with `enabled: false`
 in `plugins/trace/config.yml` (created the first time such a plugin enables; plugins never turn it

@@ -5,6 +5,7 @@ import dansplugins.netheraccesscontroller.data.PersistentData;
 import dansplugins.netheraccesscontroller.services.CommandService;
 import dansplugins.netheraccesscontroller.services.ConfigService;
 import dansplugins.netheraccesscontroller.services.StorageService;
+import dansplugins.netheraccesscontroller.services.UsageReportingService;
 import dansplugins.netheraccesscontroller.trace.TraceClient;
 import dansplugins.netheraccesscontroller.utils.ArgumentParser;
 import dansplugins.netheraccesscontroller.utils.EventRegistry;
@@ -14,8 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Collections;
 
 /**
  * @author Daniel McCoy Stephenson
@@ -30,9 +29,9 @@ public final class NetherAccessController extends JavaPlugin implements Listener
     private final UUIDChecker uuidChecker = new UUIDChecker();
     private final ArgumentParser argumentParser = new ArgumentParser();
 
-    // A no-op until the config has been read, so a command arriving before
-    // onEnable() finishes has something safe to report to.
-    private TraceClient trace = TraceClient.disabled();
+    private final UsageReportingService usageReporting = new UsageReportingService(
+            this::buildTraceClient,
+            task -> getServer().getScheduler().runTaskAsynchronously(this, task));
 
     @Override
     public void onEnable() {
@@ -68,38 +67,53 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         Metrics metrics = new Metrics(this, pluginId);
 
         // usage reporting: one event now, one per command; see config.yml
-        trace = TraceClient.builder(configService.getUsageReportingEndpoint(), getName(), getDescription().getVersion())
+        usageReporting.applyConfig();
+        announceUsageReporting();
+        usageReporting.reportStartup();
+    }
+
+    private TraceClient buildTraceClient() {
+        return TraceClient.builder(configService.getUsageReportingEndpoint(), getName(), getDescription().getVersion())
                 .key(configService.getUsageReportingKey())
                 .enabled(configService.isUsageReportingEnabled())
                 .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
-        announceUsageReporting();
-        trace.report("startup");
     }
 
     /**
-     * The startup line that says, on every enable, whether usage reporting is on and how to turn it
-     * off, or why it is off. The reason comes from the client so it matches what it actually did.
+     * Puts a changed usage-reporting option into effect. The result is logged the same way as at
+     * startup, because it can differ from what was set: the server-wide switch and the environment
+     * still turn reporting off.
+     */
+    public void applyUsageReportingConfig() {
+        usageReporting.applyConfig();
+        announceUsageReporting();
+    }
+
+    /**
+     * The line that says, on every enable and after a change to a usage-reporting option, whether
+     * usage reporting is on and how to turn it off, or why it is off. The reason comes from the
+     * client so it matches what it actually did.
      */
     private void announceUsageReporting() {
-        if (trace.isEnabled()) {
+        if (usageReporting.isEnabled()) {
             getLogger().info("Usage reporting is on: " + getName() + " sends its name, version and command names to https://trace.danielstephenson.dev, plus a random server ID (server-id in plugins/trace/config.yml) - nothing about players. Turn it off with usage-reporting.enabled: false in this plugin's config.yml, or for every plugin with enabled: false in plugins/trace/config.yml. Details: https://danielstephenson.dev/usage-reporting");
         } else {
-            getLogger().info("Usage reporting is off (" + trace.disabledReason() + ").");
+            getLogger().info("Usage reporting is off (" + usageReporting.disabledReason() + ").");
         }
     }
 
     @Override
     public void onDisable() {
-        trace.close();
+        usageReporting.close();
         storageService.save();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         // Console, command-block and plugin-dispatched commands are not counted.
         if (sender instanceof Player) {
-            trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
+            usageReporting.reportCommand(cmd.getName());
         }
         CommandService commandService = new CommandService(this, persistentData, uuidChecker, configService, argumentParser);
         return commandService.interpretCommand(sender, label, args);
