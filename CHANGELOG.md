@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `/nac config set usage-reporting.enabled false` now stops usage reporting at once; before, `/nac config show` listed `false` but events kept being sent until the server was restarted. A change to `usage-reporting.endpoint` or `usage-reporting.key`, or turning reporting back on, also takes effect at once, and the result is logged to the console the same way as at startup. The server-wide switch and the environment variables can still keep reporting off. A count held for commands run before the change is sent as it takes effect (#105).
+- `/nac config set usage-reporting <value>` is now refused with `That config option wasn't found.` Before, it replaced the whole `usage-reporting` block with the value, which turned reporting back on after `usage-reporting.enabled: false` and left that option impossible to set.
+
+## [2.3.2] – 2026-11-04
+
 ### Added
 
 - Unit tests covering how the plugin writes the options into `config.yml` on first run and on every upgrade. They check that a fresh install gets every option with its default, including `preventPortalCreation: true`, that options already set in the file are kept, that the recorded `version` is replaced by the running one, and that the bundled `usage-reporting` block is written into a file that lacks it. They pin current behaviour; no plugin behaviour changes.

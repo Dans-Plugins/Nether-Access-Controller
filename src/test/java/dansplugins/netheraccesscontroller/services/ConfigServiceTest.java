@@ -352,6 +352,63 @@ class ConfigServiceTest {
         assertRefused("off", "usage-reporting.enabled");
     }
 
+    /**
+     * The client reads its settings once, so without this call a saved opt-out would be listed by
+     * /nac config show while events kept being sent (#105). The value is saved first, because the
+     * replacement client is built from the config.
+     */
+    @Test
+    void setConfigOption_withEachUsageReportingOption_appliesItToTheRunningClient() {
+        config.set("usage-reporting.enabled", true);
+        config.set("usage-reporting.endpoint", "http://localhost:8080");
+        config.set("usage-reporting.key", "abc");
+
+        configService.setConfigOption("usage-reporting.enabled", "false", senderProxy());
+        assertEquals(1, configService.usageReportingApplications);
+        assertEquals(1, configService.savesAtLastApplication);
+
+        configService.setConfigOption("usage-reporting.endpoint", "http://localhost:9090", senderProxy());
+        assertEquals(2, configService.usageReportingApplications);
+        assertEquals(2, configService.savesAtLastApplication);
+
+        configService.setConfigOption("usage-reporting.key", "def", senderProxy());
+        assertEquals(3, configService.usageReportingApplications);
+    }
+
+    /**
+     * With the block replaced by a string, an operator's false would read through to the bundled
+     * true, and usage-reporting.enabled could no longer be set to put it back.
+     */
+    @Test
+    void setConfigOption_withTheUsageReportingSection_isRefusedAndKeepsTheOptOut() {
+        config.setDefaults(bundledConfig());
+        config.set("usage-reporting.enabled", false);
+
+        configService.setConfigOption("usage-reporting", "false", senderProxy());
+
+        assertFalse(configService.isUsageReportingEnabled());
+        assertTrue(config.isConfigurationSection("usage-reporting"));
+        assertTrue(lastMessage().contains("wasn't found."));
+        assertFalse(configService.hasBeenAltered());
+        assertEquals(0, configService.usageReportingApplications);
+    }
+
+    @Test
+    void setConfigOption_withRefusedUsageReportingValue_leavesTheRunningClientAlone() {
+        config.set("usage-reporting.enabled", true);
+
+        configService.setConfigOption("usage-reporting.enabled", "off", senderProxy());
+
+        assertEquals(0, configService.usageReportingApplications);
+    }
+
+    @Test
+    void setConfigOption_withAnotherOption_leavesTheRunningClientAlone() {
+        configService.setConfigOption("preventPortalUsage", "true", senderProxy());
+
+        assertEquals(0, configService.usageReportingApplications);
+    }
+
     @Test
     void sendConfigList_namesTheUsageReportingSwitch() {
         config.setDefaults(bundledConfig());
@@ -419,6 +476,8 @@ class ConfigServiceTest {
     private static class InMemoryConfigService extends ConfigService {
         private final FileConfiguration config;
         private int saves = 0;
+        private int usageReportingApplications = 0;
+        private int savesAtLastApplication = 0;
 
         InMemoryConfigService(FileConfiguration config) {
             super(null);
@@ -434,6 +493,12 @@ class ConfigServiceTest {
         void saveConfig() {
             // There is no file to write to; the assertions read the configuration directly.
             saves++;
+        }
+
+        @Override
+        void applyUsageReportingConfig() {
+            usageReportingApplications++;
+            savesAtLastApplication = saves;
         }
 
         @Override

@@ -22,6 +22,7 @@ import org.bukkit.configuration.file.FileConfiguration;
  * @author Daniel McCoy Stephenson
  */
 public class ConfigService {
+    private static final String USAGE_REPORTING_SECTION = "usage-reporting";
     private static final String USAGE_REPORTING_ENABLED_KEY = "usage-reporting.enabled";
     private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
     private static final String USAGE_REPORTING_KEY_KEY = "usage-reporting.key";
@@ -66,7 +67,10 @@ public class ConfigService {
 
     public void setConfigOption(String option, String value, CommandSender sender) {
 
-        if (getConfig().isSet(option)) {
+        // A section is not an option. Setting usage-reporting itself would replace the block with
+        // a string, which turns a usage-reporting.enabled: false back on through the bundled
+        // defaults and leaves that option impossible to set.
+        if (getConfig().isSet(option) && !getConfig().isConfigurationSection(option)) {
 
             if (option.equals("version")) {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
@@ -88,6 +92,10 @@ public class ConfigService {
             // save
             saveConfig();
             altered = true;
+
+            if (option.startsWith(USAGE_REPORTING_SECTION)) {
+                applyUsageReportingConfig();
+            }
         } else {
             sender.sendMessage(ChatColor.RED + "That config option wasn't found.");
         }
@@ -145,6 +153,15 @@ public class ConfigService {
      */
     void saveConfig() {
         netherAccessController.saveConfig();
+    }
+
+    /**
+     * The running usage-reporting client reads its settings once, so it is replaced after a change
+     * to one of them. Package-private for the same reason as saveConfig: a test records the call
+     * in place of a live plugin.
+     */
+    void applyUsageReportingConfig() {
+        netherAccessController.applyUsageReportingConfig();
     }
 
     /**
