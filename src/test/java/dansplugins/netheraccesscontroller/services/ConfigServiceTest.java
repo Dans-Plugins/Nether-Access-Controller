@@ -375,6 +375,24 @@ class ConfigServiceTest {
         assertEquals(3, configService.usageReportingApplications);
     }
 
+    /**
+     * With the block replaced by a string, an operator's false would read through to the bundled
+     * true, and usage-reporting.enabled could no longer be set to put it back.
+     */
+    @Test
+    void setConfigOption_withTheUsageReportingSection_isRefusedAndKeepsTheOptOut() {
+        config.setDefaults(bundledConfig());
+        config.set("usage-reporting.enabled", false);
+
+        configService.setConfigOption("usage-reporting", "false", senderProxy());
+
+        assertFalse(configService.isUsageReportingEnabled());
+        assertTrue(config.isConfigurationSection("usage-reporting"));
+        assertTrue(lastMessage().contains("wasn't found."));
+        assertFalse(configService.hasBeenAltered());
+        assertEquals(0, configService.usageReportingApplications);
+    }
+
     @Test
     void setConfigOption_withRefusedUsageReportingValue_leavesTheRunningClientAlone() {
         config.set("usage-reporting.enabled", true);

@@ -67,7 +67,10 @@ public class ConfigService {
 
     public void setConfigOption(String option, String value, CommandSender sender) {
 
-        if (getConfig().isSet(option)) {
+        // A section is not an option. Setting usage-reporting itself would replace the block with
+        // a string, which turns a usage-reporting.enabled: false back on through the bundled
+        // defaults and leaves that option impossible to set.
+        if (getConfig().isSet(option) && !getConfig().isConfigurationSection(option)) {
 
             if (option.equals("version")) {
                 sender.sendMessage(ChatColor.RED + "Cannot set version.");
