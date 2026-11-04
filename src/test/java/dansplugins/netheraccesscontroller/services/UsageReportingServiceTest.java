@@ -127,6 +127,19 @@ class UsageReportingServiceTest {
     }
 
     @Test
+    void reportStartup_sendsAStartupEvent() {
+        UsageReportingService service = serviceClosingOnTheCallingThread();
+        service.applyConfig();
+        assumeReportingIsOn(service);
+
+        service.reportStartup();
+        service.close();
+
+        assertEquals(1, received.size());
+        assertTrue(received.get(0).contains("startup"));
+    }
+
+    @Test
     void beforeTheConfigIsApplied_nothingIsReported() {
         UsageReportingService service = serviceClosingOnTheCallingThread();
 
