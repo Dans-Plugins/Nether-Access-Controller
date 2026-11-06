@@ -165,6 +165,58 @@ class PersistentDataTest {
         assertFalse(persistentData.isPlayerAllowed(playerUUID));
     }
 
+    /**
+     * Gson reads the save data leniently, so a comma left behind by a hand edit of
+     * allowedPlayers.json loads as a null entry. A null entry that stayed in the list would make
+     * isPlayerAllowed throw out of the listener, with the same result as a null whitelist.
+     */
+    @Test
+    void load_withATrailingComma_keepsTheEntriesAndStillDeniesOthers() {
+        Map<String, String> saved = new HashMap<String, String>();
+        saved.put("allowedPlayers", "[\"" + playerUUID + "\",]");
+
+        assertTrue(persistentData.load(saved));
+
+        assertEquals(1, persistentData.getAllowedPlayers().size());
+        assertTrue(persistentData.isPlayerAllowed(playerUUID));
+        assertFalse(persistentData.isPlayerAllowed(UUID.randomUUID()));
+    }
+
+    @Test
+    void load_withADoubledComma_keepsTheEntriesOnBothSides() {
+        UUID otherPlayerUUID = UUID.randomUUID();
+        Map<String, String> saved = new HashMap<String, String>();
+        saved.put("allowedPlayers", "[\"" + playerUUID + "\",,\"" + otherPlayerUUID + "\"]");
+
+        assertTrue(persistentData.load(saved));
+
+        assertEquals(2, persistentData.getAllowedPlayers().size());
+        assertTrue(persistentData.isPlayerAllowed(otherPlayerUUID));
+        assertFalse(persistentData.isPlayerAllowed(UUID.randomUUID()));
+    }
+
+    /**
+     * Which exception an invalid UUID raises depends on the Gson version the server provides, and
+     * one that escapes here stops the plugin from enabling.
+     */
+    @Test
+    void load_withAnInvalidUuid_deniesEveryoneAndReportsThatNothingWasRecovered() {
+        Map<String, String> saved = new HashMap<String, String>();
+        saved.put("allowedPlayers", "[\"" + playerUUID + "\",\"c0ffee\"]");
+
+        assertFalse(persistentData.load(saved));
+
+        assertTrue(persistentData.getAllowedPlayers().isEmpty());
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
+    }
+
+    @Test
+    void load_reportsWhetherAWhitelistWasRecovered() {
+        assertTrue(persistentData.load(new PersistentData().save()));
+        assertFalse(persistentData.load(new HashMap<String, String>()));
+        assertFalse(persistentData.load(null));
+    }
+
     @Test
     void listHeader_hasAsManyEqualsSignsOnEachSide() {
         String header = PersistentData.LIST_HEADER;

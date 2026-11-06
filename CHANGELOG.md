@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- A blank entry in `allowedPlayers.json`, such as a comma left behind by a hand edit, is now ignored and reported in the server log. Before, it made every access check throw for players it reached, which left the portal event uncancelled and let them through (#121).
+- An entry in `allowedPlayers.json` that is not a valid UUID no longer stops the plugin from enabling or costs the rest of the whitelist. The whitelist starts empty, so no one has nether access, and the file is renamed to `allowedPlayers.json.unreadable` for repair, as for any other unreadable file. Before, the file stayed in place and was overwritten when the server stopped (#121).
+
+## [2.3.3] – 2026-11-05
+
+### Fixed
+
 - `/nac config set usage-reporting.enabled false` now stops usage reporting at once; before, `/nac config show` listed `false` but events kept being sent until the server was restarted. A change to `usage-reporting.endpoint` or `usage-reporting.key`, or turning reporting back on, also takes effect at once, and the result is logged to the console the same way as at startup. The server-wide switch and the environment variables can still keep reporting off. A count held for commands run before the change is sent as it takes effect (#105).
 - `/nac config set usage-reporting <value>` is now refused with `That config option wasn't found.` Before, it replaced the whole `usage-reporting` block with the value, which turned reporting back on after `usage-reporting.enabled: false` and left that option impossible to set.
 
