@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Covers the save-file recovery behaviour of {@link StorageService#loadDataFromFilename}, which
- * runs from onEnable. An exception thrown from here stops the plugin from enabling, and a plugin
+ * Covers the save-file recovery behaviour of {@link StorageService#loadDataFromFilename} and
+ * {@link StorageService#loadAllowedPlayersFrom}, which run from onEnable. An exception thrown from here stops the plugin from enabling, and a plugin
  * that does not enable registers no listeners, so every player can create and use nether portals
  * regardless of the whitelist. Every unreadable input is therefore asserted to yield an empty
  * list instead, which keeps the plugin running with an empty (deny-everyone) whitelist.
  *
- * The collaborators are null because loadDataFromFilename reads none of them. The methods that do
+ * The other collaborators are null because neither path under test reads them. The methods that do
  * require a live Bukkit server are out of scope here and are covered by manual validation instead.
  */
 class StorageServiceTest {
