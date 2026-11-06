@@ -84,13 +84,26 @@ public class StorageService {
     }
 
     private void loadAllowedPlayers() {
+        loadAllowedPlayersFrom(FILE_PATH + ALLOWED_PLAYERS_FILE_NAME);
+    }
+
+    /**
+     * Loads the whitelist from the given save file, setting the file aside if the whitelist inside
+     * it cannot be read. loadDataFromFilename only checks the JSON around the whitelist, and the
+     * save on shutdown would otherwise replace every entry with an empty whitelist.
+     *
+     * Package-private so that a test can supply a temporary file in place of the fixed save path.
+     */
+    void loadAllowedPlayersFrom(String filename) {
 
         // persistentData.clear();
 
-        ArrayList<HashMap<String, String>> data = loadDataFromFilename(FILE_PATH + ALLOWED_PLAYERS_FILE_NAME);
+        ArrayList<HashMap<String, String>> data = loadDataFromFilename(filename);
 
         if (data.size() > 0 && data.get(0) != null) {
-            persistentData.load(data.get(0));
+            if (!persistentData.load(data.get(0))) {
+                setUnreadableFileAside(new File(filename));
+            }
         }
         else {
             if (netherAccessController.isDebugEnabled()) {

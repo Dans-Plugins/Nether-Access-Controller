@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -94,9 +95,13 @@ public class PersistentData {
      * Save data that carries no usable whitelist leaves an empty whitelist rather than a null
      * one. A null whitelist would make every later access check throw out of its event handler,
      * which leaves the restricted event uncancelled and lets the player through; an empty
-     * whitelist denies everyone, which is the safe direction for this plugin.
+     * whitelist denies everyone, which is the safe direction for this plugin. A blank entry, which
+     * is what a comma left behind by a hand edit reads as, is dropped for the same reason.
+     *
+     * Returns false if no whitelist could be recovered, so that the caller can keep what the save
+     * data was read from rather than let the next save replace it with the empty whitelist.
      */
-    public void load(Map<String, String> data) {
+    public boolean load(Map<String, String> data) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         Type arrayListTypeUUID = new TypeToken<ArrayList<UUID>>(){}.getType();
@@ -106,7 +111,8 @@ public class PersistentData {
             try {
                 // Gson returns null when the key is absent or its value is the JSON literal null.
                 loadedPlayers = gson.fromJson(data.get("allowedPlayers"), arrayListTypeUUID);
-            } catch (JsonParseException e) {
+            } catch (JsonParseException | IllegalArgumentException e) {
+                // Which of the two an invalid UUID raises depends on the Gson the server provides.
                 System.out.println("ERROR: Saved whitelist could not be parsed: " + e.toString());
             }
         }
@@ -114,9 +120,15 @@ public class PersistentData {
         if (loadedPlayers == null) {
             System.out.println("WARNING: No whitelist could be recovered from the save data. "
                     + "No player is allowed to access the nether until one is allowed again.");
-            loadedPlayers = new ArrayList<UUID>();
+            allowedPlayers = new ArrayList<UUID>();
+            return false;
+        }
+
+        if (loadedPlayers.removeIf(Objects::isNull)) {
+            System.out.println("WARNING: Blank entries in the saved whitelist were ignored.");
         }
 
         allowedPlayers = loadedPlayers;
+        return true;
     }
 }

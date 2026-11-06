@@ -1,5 +1,6 @@
 package dansplugins.netheraccesscontroller.services;
 
+import dansplugins.netheraccesscontroller.data.PersistentData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -9,19 +10,20 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Covers the save-file recovery behaviour of {@link StorageService#loadDataFromFilename}, which
- * runs from onEnable. An exception thrown from here stops the plugin from enabling, and a plugin
+ * Covers the save-file recovery behaviour of {@link StorageService#loadDataFromFilename} and
+ * {@link StorageService#loadAllowedPlayersFrom}, which run from onEnable. An exception thrown from here stops the plugin from enabling, and a plugin
  * that does not enable registers no listeners, so every player can create and use nether portals
  * regardless of the whitelist. Every unreadable input is therefore asserted to yield an empty
  * list instead, which keeps the plugin running with an empty (deny-everyone) whitelist.
  *
- * The collaborators are null because loadDataFromFilename reads none of them. The methods that do
+ * The other collaborators are null because neither path under test reads them. The methods that do
  * require a live Bukkit server are out of scope here and are covered by manual validation instead.
  */
 class StorageServiceTest {
@@ -119,6 +121,54 @@ class StorageServiceTest {
                 "With no free destination the save file should be left untouched");
         assertEquals("taken", contentsOf(unreadableCopyOf(saveFile)),
                 "No save file already set aside should be overwritten");
+    }
+
+    /**
+     * The outer JSON of this file is fine, so loadDataFromFilename leaves it in place. Only the
+     * whitelist inside it is unreadable, and the save on shutdown would replace every entry with
+     * an empty whitelist if the file were not set aside here too.
+     */
+    @Test
+    void loadAllowedPlayersFrom_withAnInvalidUuidInside_deniesEveryoneAndSetsTheFileAside() throws IOException {
+        PersistentData persistentData = new PersistentData();
+        UUID playerUUID = UUID.randomUUID();
+        String contents = "[{\"allowedPlayers\":\"[\\\"" + playerUUID + "\\\",\\\"c0ffee\\\"]\"}]";
+        File saveFile = saveFileContaining(contents);
+
+        new StorageService(null, null, persistentData).loadAllowedPlayersFrom(saveFile.getPath());
+
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
+        assertRenamedOutOfTheWay(saveFile);
+        assertEquals(contents, contentsOf(unreadableCopyOf(saveFile)));
+    }
+
+    @Test
+    void loadAllowedPlayersFrom_withAValidFile_loadsTheWhitelistAndLeavesTheFileInPlace() throws IOException {
+        PersistentData persistentData = new PersistentData();
+        UUID playerUUID = UUID.randomUUID();
+        File saveFile = saveFileContaining("[{\"allowedPlayers\":\"[\\\"" + playerUUID + "\\\"]\"}]");
+
+        new StorageService(null, null, persistentData).loadAllowedPlayersFrom(saveFile.getPath());
+
+        assertTrue(persistentData.isPlayerAllowed(playerUUID));
+        assertTrue(saveFile.exists());
+        assertFalse(unreadableCopyOf(saveFile).exists());
+    }
+
+    /**
+     * The entries are still good, so there is nothing for an operator to repair.
+     */
+    @Test
+    void loadAllowedPlayersFrom_withATrailingCommaInside_keepsTheFileInPlace() throws IOException {
+        PersistentData persistentData = new PersistentData();
+        UUID playerUUID = UUID.randomUUID();
+        File saveFile = saveFileContaining("[{\"allowedPlayers\":\"[\\\"" + playerUUID + "\\\",]\"}]");
+
+        new StorageService(null, null, persistentData).loadAllowedPlayersFrom(saveFile.getPath());
+
+        assertTrue(persistentData.isPlayerAllowed(playerUUID));
+        assertTrue(saveFile.exists());
+        assertFalse(unreadableCopyOf(saveFile).exists());
     }
 
     /**
