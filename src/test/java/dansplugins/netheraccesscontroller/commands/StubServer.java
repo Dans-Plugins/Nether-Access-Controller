@@ -5,6 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -64,7 +65,7 @@ public final class StubServer {
         OFFLINE_PLAYERS.clear();
     }
 
-    private static void install() {
+    public static synchronized void install() {
         if (Bukkit.getServer() == null) {
             Bukkit.setServer(proxy(Server.class, StubServer::answerServer));
         }
@@ -87,6 +88,11 @@ public final class StubServer {
         }
         if (method.getName().equals("getOfflinePlayers")) {
             return OFFLINE_PLAYERS.toArray(new OfflinePlayer[0]);
+        }
+        if (method.getName().equals("getPluginManager")) {
+            // SimpleCommandMap asks for it while timing a command.
+            return proxy(PluginManager.class, (manager, managerMethod, managerArgs) ->
+                    defaultValueFor(managerMethod.getReturnType()));
         }
         if (method.getName().equals("getLogger")) {
             // Bukkit.setServer logs the server's name and version through this logger.

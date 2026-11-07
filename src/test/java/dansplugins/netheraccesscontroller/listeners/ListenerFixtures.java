@@ -33,8 +33,10 @@ import java.util.UUID;
  *
  * Players, blocks and inventories are stubbed with a {@link Proxy}, as elsewhere in this project,
  * because no mocking dependency is declared.
+ *
+ * NetherAccessControllerTest stands the plugin up the same way, which is why this class is public.
  */
-final class ListenerFixtures {
+public final class ListenerFixtures {
 
     private ListenerFixtures() {
     }
@@ -53,7 +55,7 @@ final class ListenerFixtures {
         return config;
     }
 
-    static NetherAccessController pluginWith(FileConfiguration config) {
+    public static NetherAccessController pluginWith(FileConfiguration config) {
         try {
             Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
             Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
@@ -78,11 +80,11 @@ final class ListenerFixtures {
                 method.getName().equals("getBlockData") ? blockData : defaultValueFor(method.getReturnType()));
     }
 
-    static <T> T proxy(Class<T> type, InvocationHandler handler) {
+    public static <T> T proxy(Class<T> type, InvocationHandler handler) {
         return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, handler));
     }
 
-    static Object defaultValueFor(Class<?> returnType) {
+    public static Object defaultValueFor(Class<?> returnType) {
         if (returnType.equals(boolean.class)) {
             return false;
         }

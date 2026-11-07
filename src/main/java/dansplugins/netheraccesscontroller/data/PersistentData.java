@@ -46,20 +46,19 @@ public class PersistentData {
     }
 
     public void setPlayerAllowed(Player player, boolean value) {
-        if (value) {
-            allowedPlayers.add(player.getUniqueId());
-        }
-        else {
-            allowedPlayers.remove(player.getUniqueId());
-        }
+        setPlayerAllowed(player.getUniqueId(), value);
     }
 
+    /**
+     * Every copy of an entry is removed, not only the first: a hand edit of the save file can list
+     * a player twice, and a copy left behind keeps them allowed after /nac deny says they are not.
+     */
     public void setPlayerAllowed(UUID playerUUID, boolean value) {
         if (value) {
             allowedPlayers.add(playerUUID);
         }
         else {
-            allowedPlayers.remove(playerUUID);
+            allowedPlayers.removeIf(playerUUID::equals);
         }
     }
 

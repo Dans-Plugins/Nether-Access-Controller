@@ -1,8 +1,10 @@
 package dansplugins.netheraccesscontroller.data;
 
+import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -82,6 +84,38 @@ class PersistentDataTest {
                 .filter(uuid -> uuid.equals(playerUUID))
                 .count();
         assertEquals(2, occurrences);
+    }
+
+    /**
+     * The only way into the list twice in play is a hand edit of allowedPlayers.json, because
+     * AllowCommand checks first. Removing one copy would leave the player allowed while
+     * /nac deny reported that they no longer are.
+     */
+    @Test
+    void setPlayerAllowed_false_removesEveryCopyOfADuplicatedEntry() {
+        UUID otherPlayerUUID = UUID.randomUUID();
+        Map<String, String> saved = new HashMap<String, String>();
+        saved.put("allowedPlayers",
+                "[\"" + playerUUID + "\",\"" + otherPlayerUUID + "\",\"" + playerUUID + "\"]");
+        assertTrue(persistentData.load(saved));
+
+        persistentData.setPlayerAllowed(playerUUID, false);
+
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
+        assertTrue(persistentData.isPlayerAllowed(otherPlayerUUID));
+    }
+
+    @Test
+    void setPlayerAllowed_false_forAPlayer_removesEveryCopyOfADuplicatedEntry() {
+        Player player = (Player) Proxy.newProxyInstance(
+                Player.class.getClassLoader(), new Class<?>[]{Player.class},
+                (proxy, method, args) -> method.getName().equals("getUniqueId") ? playerUUID : null);
+        persistentData.setPlayerAllowed(playerUUID, true);
+        persistentData.setPlayerAllowed(playerUUID, true);
+
+        persistentData.setPlayerAllowed(player, false);
+
+        assertFalse(persistentData.isPlayerAllowed(playerUUID));
     }
 
     @Test

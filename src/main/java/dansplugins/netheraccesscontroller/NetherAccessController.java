@@ -116,7 +116,9 @@ public final class NetherAccessController extends JavaPlugin implements Listener
             usageReporting.reportCommand(cmd.getName());
         }
         CommandService commandService = new CommandService(this, persistentData, uuidChecker, configService, argumentParser);
-        return commandService.interpretCommand(sender, label, args);
+        // The command's name rather than the label, which is whatever the sender typed:
+        // /netheraccesscontroller:nac arrives with that whole text as its label.
+        return commandService.interpretCommand(sender, cmd.getName(), args);
     }
 
     public String getVersion() {
