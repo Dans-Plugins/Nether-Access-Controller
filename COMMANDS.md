@@ -1,6 +1,6 @@
 # Commands Reference
 
-All commands use the `/nac` base command. Sub-command names are matched without regard to case. A sub-command that is not listed below is answered with `Nether Access Controller doesn't recognize that command.`
+All commands use the `/nac` base command. If another plugin has claimed `/nac`, the same commands can be reached with `/netheraccesscontroller:nac`. Sub-command names are matched without regard to case. A sub-command that is not listed below is answered with `Nether Access Controller doesn't recognize that command.`
 
 ## General Commands
 
@@ -27,7 +27,7 @@ All commands use the `/nac` base command. Sub-command names are matched without 
 
 ### /nac deny \<playerName\>
 
-**Description:** Removes a player from the nether access whitelist, preventing them from creating and using nether portals. The player is looked up the same way as for `/nac allow`, and a player not on the whitelist is reported as already not allowed.
+**Description:** Removes a player from the nether access whitelist, preventing them from creating and using nether portals. The player is looked up the same way as for `/nac allow`, and a player not on the whitelist is reported as already not allowed. A player listed more than once in `allowedPlayers.json` has every entry removed.
 **Permission:** `nac.deny`
 **Usage:** `/nac deny <playerName>`
 **Example:** `/nac deny Steve`

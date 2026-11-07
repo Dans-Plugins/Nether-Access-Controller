@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - A blank entry in `allowedPlayers.json`, such as a comma left behind by a hand edit, is now ignored and reported in the server log. Before, it made every access check throw for players it reached, which left the portal event uncancelled and let them through (#121).
 - An entry in `allowedPlayers.json` that is not a valid UUID no longer stops the plugin from enabling or costs the rest of the whitelist. The whitelist starts empty, so no one has nether access, and the file is renamed to `allowedPlayers.json.unreadable` for repair, as for any other unreadable file. Before, the file stayed in place and was overwritten when the server stopped (#121).
+- `/nac deny` now removes a player listed more than once in `allowedPlayers.json`. Before, it removed one entry and reported that the player was no longer allowed, while the other entry kept their access (#123).
+- `/netheraccesscontroller:nac`, the namespaced form of `/nac` that is needed when another plugin has claimed `/nac`, now runs the same commands. Before, every use of it was answered with `Nether Access Controller doesn't recognize that command.` (#124)
 
 ## [2.3.3] – 2026-11-05
 
