@@ -8,6 +8,8 @@ Option names are case-sensitive in both places.
 
 Options marked below as boolean accept only `true` or `false`, in any casing. Any other value is refused by `/nac config set` and the current setting is kept.
 
+A hand edit of `config.yml` is not checked the same way. YAML also reads `yes`/`no` and `on`/`off` as booleans. Any other value, such as a typo (`ture`), a quoted `"true"` or `1`, is read as `false` for `debugMode`, `preventPortalUsage` and `preventPortalCreation`, and nothing is logged. For `preventPortalCreation` that turns the protection off. `/nac config show` lists the value that is in effect, so check it after editing the file (#126). `usage-reporting.enabled` reads such a value as `true`, its bundled default.
+
 ## version
 
 **Type:** string
