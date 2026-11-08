@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The documentation now covers what the code already does in three more places. `CONFIG.md` now says that a hand edit of `config.yml` is not checked like `/nac config set`: a value that YAML does not read as a boolean, such as a typo, a quoted `"true"` or `1`, is read as `false` for `debugMode`, `preventPortalUsage` and `preventPortalCreation`, which turns portal-creation protection off with nothing logged. That is tracked in #126. `COMMANDS.md` now gives the replies to `/nac config` with no sub-command or an unknown one, to `/nac config set` with an option or value missing, and to a deny message not enclosed in single quotes. It also says that `usage-reporting.endpoint` and `usage-reporting.key` can be set even though `/nac config show` does not list them. No plugin behaviour changes.
+
 ### Fixed
 
 - A blank entry in `allowedPlayers.json`, such as a comma left behind by a hand edit, is now ignored and reported in the server log. Before, it made every access check throw for players it reached, which left the portal event uncancelled and let them through (#121).

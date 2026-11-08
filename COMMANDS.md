@@ -40,6 +40,8 @@ All commands use the `/nac` base command. If another plugin has claimed `/nac`, 
 
 ## Configuration Commands
 
+`/nac config` on its own, or followed by anything other than `show` or `set`, replies with `Sub-commands: show, set`.
+
 ### /nac config show
 
 **Description:** Displays the current values of `version`, `debugMode`, `preventPortalUsage`, `preventPortalCreation`, `denyUsageMessage`, `denyCreationMessage` and `usage-reporting.enabled`. `usage-reporting.endpoint` and `usage-reporting.key` are not shown; read them in `config.yml`.
@@ -48,7 +50,7 @@ All commands use the `/nac` base command. If another plugin has claimed `/nac`, 
 
 ### /nac config set \<option\> \<value\>
 
-**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; everything between the first and the last single quote is used, so apostrophes inside the message are kept. Every other option takes a single word as its value. Option names are case-sensitive and must be spelled as `/nac config show` lists them: `preventportalusage` is refused with `That config option wasn't found.` The new value is written to `config.yml` straight away and takes effect at once.
+**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; everything between the first and the last single quote is used, so apostrophes inside the message are kept, and a message with fewer than two single quotes is refused with `New message must be in between single quotes.` Without both an option and a value, the reply is `Usage: /nac config set (option) (value)`. Every other option takes a single word as its value. Option names are case-sensitive and must be spelled as `/nac config show` lists them: `preventportalusage` is refused with `That config option wasn't found.` `usage-reporting.endpoint` and `usage-reporting.key` are not listed by `/nac config show` but can be set the same way, spelled as in [CONFIG.md](CONFIG.md). The new value is written to `config.yml` straight away and takes effect at once.
 **Permission:** `nac.config`
 **Usage:** `/nac config set <option> <value>`
 **Example:** `/nac config set preventPortalUsage true`
