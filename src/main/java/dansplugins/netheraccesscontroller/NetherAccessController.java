@@ -55,6 +55,9 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         if (!getConfig().isSet("usage-reporting")) {
             configService.saveMissingConfigDefaultsIfNotPresent();
         }
+        // A hand edit is not checked like /nac config set, so say here if one left a boolean
+        // option unreadable; the option's default is used in its place (#126).
+        configService.warnAboutNonBooleanValues();
 
         // register event handlers
         eventRegistry.registerEvents();
