@@ -5,13 +5,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /*
     To add a new config option, the following methods must be altered:
     - saveMissingConfigDefaultsIfNotPresent
     - setConfigOption()
     - sendConfigList()
     A boolean option must also be named in isBooleanOption(), or setConfigOption() will store it
-    as a string and accept any value for it.
+    as a string and accept any value for it, and given its default in BOOLEAN_DEFAULTS, or a
+    value in the file that is not a boolean will read as false.
 
     The usage-reporting block is the exception: it is bundled in src/main/resources/config.yml
     rather than written by saveMissingConfigDefaultsIfNotPresent, and read through the accessors
@@ -27,6 +32,24 @@ public class ConfigService {
     private static final String USAGE_REPORTING_ENDPOINT_KEY = "usage-reporting.endpoint";
     private static final String USAGE_REPORTING_KEY_KEY = "usage-reporting.key";
     private static final String DEFAULT_USAGE_REPORTING_ENDPOINT = "https://trace.danielstephenson.dev";
+
+    /**
+     * The boolean options saveMissingConfigDefaultsIfNotPresent writes, with the defaults it writes
+     * them with. No default is registered for them with Bukkit, so its one-argument getBoolean
+     * reads a value that is not a boolean (a typo, a quoted "true", a 1) as false. getBoolean reads
+     * such a value as the default here instead, so that a bad hand edit cannot turn
+     * preventPortalCreation off (#126). usage-reporting.enabled is not listed: the bundled
+     * config.yml is registered as its default, so a bad value already reads as true.
+     */
+    private static final Map<String, Boolean> BOOLEAN_DEFAULTS;
+
+    static {
+        Map<String, Boolean> defaults = new LinkedHashMap<>();
+        defaults.put("debugMode", false);
+        defaults.put("preventPortalUsage", false);
+        defaults.put("preventPortalCreation", true);
+        BOOLEAN_DEFAULTS = Collections.unmodifiableMap(defaults);
+    }
 
     private final NetherAccessController netherAccessController;
 
@@ -47,7 +70,7 @@ public class ConfigService {
 
         // save config options
         if (!getConfig().isSet("debugMode")) {
-            getConfig().set("debugMode", false);
+            getConfig().set("debugMode", BOOLEAN_DEFAULTS.get("debugMode"));
         }
         if (!getConfig().isSet("denyUsageMessage")) {
             getConfig().set("denyUsageMessage", "You're unable to use nether portals.");
@@ -56,10 +79,10 @@ public class ConfigService {
             getConfig().set("denyCreationMessage", "You're unable to create nether portals.");
         }
         if (!getConfig().isSet("preventPortalUsage")) {
-            getConfig().set("preventPortalUsage", false);
+            getConfig().set("preventPortalUsage", BOOLEAN_DEFAULTS.get("preventPortalUsage"));
         }
         if (!getConfig().isSet("preventPortalCreation")) {
-            getConfig().set("preventPortalCreation", true);
+            getConfig().set("preventPortalCreation", BOOLEAN_DEFAULTS.get("preventPortalCreation"));
         }
         getConfig().options().copyDefaults(true);
         saveConfig();
@@ -176,8 +199,41 @@ public class ConfigService {
         return getConfig().getInt(option);
     }
 
+    /**
+     * For an option in BOOLEAN_DEFAULTS whose value is missing or is not a boolean, returns that
+     * option's documented default rather than the false Bukkit would return.
+     */
     public boolean getBoolean(String option) {
+        Boolean fallback = BOOLEAN_DEFAULTS.get(option);
+        if (fallback != null && !getConfig().isBoolean(option)) {
+            return fallback;
+        }
         return getConfig().getBoolean(option);
+    }
+
+    /**
+     * Logs a warning for each option in BOOLEAN_DEFAULTS whose value in config.yml is not a
+     * boolean, naming the value found and the default used in its place. Called once the config
+     * has been loaded on enable; nothing else reports a bad hand edit.
+     */
+    public void warnAboutNonBooleanValues() {
+        for (Map.Entry<String, Boolean> entry : BOOLEAN_DEFAULTS.entrySet()) {
+            String option = entry.getKey();
+            if (getConfig().isSet(option) && !getConfig().isBoolean(option)) {
+                logWarning("config.yml has '" + getConfig().get(option) + "' for " + option
+                        + ", which is not true or false. Using the default, " + entry.getValue()
+                        + ", until it is corrected with /nac config set " + option
+                        + " <true|false> or by editing the file.");
+            }
+        }
+    }
+
+    /**
+     * Package-private for the same reason as saveConfig: a test records the warning in place of a
+     * live plugin's logger.
+     */
+    void logWarning(String message) {
+        netherAccessController.getLogger().warning(message);
     }
 
     public double getDouble(String option) {

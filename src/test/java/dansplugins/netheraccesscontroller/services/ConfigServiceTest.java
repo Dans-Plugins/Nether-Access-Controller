@@ -419,6 +419,106 @@ class ConfigServiceTest {
     }
 
     /**
+     * The regression for #126: a hand-edited value that YAML does not read as a boolean used to
+     * read as false, turning portal-creation protection off with nothing logged. Each value here
+     * was measured to load as a non-Boolean. The bundled defaults are registered the way Bukkit
+     * registers them, so the test shows they do not cover this option.
+     */
+    @Test
+    void getBoolean_withNonBooleanValueInTheFile_usesTheDocumentedDefault() {
+        for (String value : new String[]{"ture", "\"true\"", "1", "\"\""}) {
+            InMemoryConfigService service = new InMemoryConfigService(loadedWith(
+                    "debugMode: " + value + "\npreventPortalUsage: " + value + "\npreventPortalCreation: " + value + "\n"));
+
+            assertFalse(service.getConfig().isBoolean("preventPortalCreation"), value + " should load as a non-boolean");
+            assertTrue(service.getBoolean("preventPortalCreation"),
+                    value + " must not turn portal-creation protection off");
+            assertFalse(service.getBoolean("preventPortalUsage"), value + " should read as preventPortalUsage's default");
+            assertFalse(service.getBoolean("debugMode"), value + " should read as debugMode's default");
+        }
+    }
+
+    /**
+     * The fallback applies only to a value that is not a boolean: a real false, including YAML's
+     * other spellings of it, still turns the protection off.
+     */
+    @Test
+    void getBoolean_withABooleanValueInTheFile_readsIt() {
+        InMemoryConfigService off = new InMemoryConfigService(loadedWith(
+                "preventPortalCreation: false\npreventPortalUsage: yes\ndebugMode: on\n"));
+        InMemoryConfigService no = new InMemoryConfigService(loadedWith("preventPortalCreation: no\n"));
+
+        assertFalse(off.getBoolean("preventPortalCreation"));
+        assertTrue(off.getBoolean("preventPortalUsage"));
+        assertTrue(off.getBoolean("debugMode"));
+        assertFalse(no.getBoolean("preventPortalCreation"));
+    }
+
+    /**
+     * An option deleted from a file whose version matches is not written back on the next start,
+     * so it too reads as its documented default rather than as false.
+     */
+    @Test
+    void getBoolean_withTheOptionMissing_usesTheDocumentedDefault() {
+        InMemoryConfigService service = new InMemoryConfigService(loadedWith("version: v9.8.7\n"));
+
+        assertTrue(service.getBoolean("preventPortalCreation"));
+        assertFalse(service.getBoolean("preventPortalUsage"));
+    }
+
+    /**
+     * /nac config show reads through the same accessor, so it lists the value actually enforced.
+     */
+    @Test
+    void sendConfigList_withNonBooleanPreventPortalCreation_listsTheDefaultInEffect() {
+        InMemoryConfigService service = new InMemoryConfigService(loadedWith("preventPortalCreation: ture\n"));
+
+        service.sendConfigList(senderProxy());
+
+        assertTrue(lastMessage().contains("preventPortalCreation: true"));
+    }
+
+    @Test
+    void warnAboutNonBooleanValues_namesEachBadOptionItsValueAndTheDefaultUsed() {
+        InMemoryConfigService service = new InMemoryConfigService(loadedWith(
+                "debugMode: false\npreventPortalUsage: 1\npreventPortalCreation: ture\n"));
+
+        service.warnAboutNonBooleanValues();
+
+        assertEquals(2, service.warnings.size(), "only the two non-boolean options should be reported: " + service.warnings);
+        assertTrue(service.warnings.get(0).contains("preventPortalUsage")
+                && service.warnings.get(0).contains("'1'")
+                && service.warnings.get(0).contains("default, false"), service.warnings.get(0));
+        assertTrue(service.warnings.get(1).contains("preventPortalCreation")
+                && service.warnings.get(1).contains("'ture'")
+                && service.warnings.get(1).contains("default, true"), service.warnings.get(1));
+    }
+
+    /**
+     * A file with every option a boolean, or with one missing, is the normal case and must log
+     * nothing.
+     */
+    @Test
+    void warnAboutNonBooleanValues_isSilentForBooleanAndMissingOptions() {
+        configService.warnAboutNonBooleanValues();
+        InMemoryConfigService missing = new InMemoryConfigService(loadedWith("version: v9.8.7\n"));
+        missing.warnAboutNonBooleanValues();
+
+        assertTrue(configService.warnings.isEmpty(), configService.warnings.toString());
+        assertTrue(missing.warnings.isEmpty(), missing.warnings.toString());
+    }
+
+    /**
+     * A config.yml read from the given text, with the bundled file registered as its defaults, as
+     * Bukkit does for the plugin's own config.
+     */
+    private static YamlConfiguration loadedWith(String yaml) {
+        YamlConfiguration loaded = YamlConfiguration.loadConfiguration(new StringReader(yaml));
+        loaded.setDefaults(bundledConfig());
+        return loaded;
+    }
+
+    /**
      * The config.yml shipped in the jar, which Bukkit registers as the defaults for the file on
      * disk. Read from the test classpath so that the test sees the file as built.
      */
@@ -478,6 +578,7 @@ class ConfigServiceTest {
         private int saves = 0;
         private int usageReportingApplications = 0;
         private int savesAtLastApplication = 0;
+        private final List<String> warnings = new ArrayList<>();
 
         InMemoryConfigService(FileConfiguration config) {
             super(null);
@@ -499,6 +600,11 @@ class ConfigServiceTest {
         void applyUsageReportingConfig() {
             usageReportingApplications++;
             savesAtLastApplication = saves;
+        }
+
+        @Override
+        void logWarning(String message) {
+            warnings.add(message);
         }
 
         @Override
