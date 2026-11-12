@@ -77,3 +77,5 @@ A blank entry, such as a comma left behind after removing a UUID by hand, is not
 | `nac.allow` | op | Allow a player nether access |
 | `nac.deny` | op | Deny a player nether access |
 | `nac.config` | op | View and modify configuration |
+
+A player without the node for a command is told which node it needs, for example `In order to use this command, you need the following permission: 'nac.allow'`, and the command does not run. `/nac` on its own, which shows the plugin version, needs no permission.
