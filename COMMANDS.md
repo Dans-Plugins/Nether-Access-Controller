@@ -2,7 +2,7 @@
 
 All commands use the `/nac` base command. If another plugin has claimed `/nac`, the same commands can be reached with `/netheraccesscontroller:nac`. Sub-command names are matched without regard to case. A sub-command that is not listed below is answered with `Nether Access Controller doesn't recognize that command.`
 
-Each sub-command other than `/nac` itself needs the permission node listed for it. A sender without that node is answered with `In order to use this command, you need the following permission: '<node>'` (for example `'nac.allow'`), and the sub-command does not run. No usage line follows that reply. The server console has every node.
+Each sub-command needs the permission node listed for it; `/nac` on its own needs none. A sender without that node is answered with `In order to use this command, you need the following permission: '<node>'` (for example `'nac.allow'`), and the sub-command does not run. No usage line follows that reply. The server console has every node.
 
 ## General Commands
 
