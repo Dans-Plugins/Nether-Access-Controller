@@ -22,14 +22,14 @@ Each sub-command needs the permission node listed for it; `/nac` on its own need
 
 ### /nac allow \<playerName\>
 
-**Description:** Adds a player to the nether access whitelist, allowing them to create and use nether portals. The player must have joined the server at least once; the name is matched without regard to case, against online players first and then players who have played before. A name the server has never seen is refused with `That player wasn't found.`, and a player already on the whitelist is reported as already allowed.
+**Description:** Adds a player to the nether access whitelist, allowing them to create and use nether portals. The player must have joined the server at least once; the name is matched without regard to case, against online players first and then players who have played before. A name the server has never seen is refused with `That player wasn't found.`, and a player already on the whitelist is answered with `<playerName> is already allowed to use nether portals.` Without a player name, the reply is `Usage: /nac allow (playerName)`. On success, the reply is `<playerName> is now allowed to use nether portals.`, with the name spelled as the server records it rather than as it was typed.
 **Permission:** `nac.allow`
 **Usage:** `/nac allow <playerName>`
 **Example:** `/nac allow Steve`
 
 ### /nac deny \<playerName\>
 
-**Description:** Removes a player from the nether access whitelist, preventing them from creating and using nether portals. The player is looked up the same way as for `/nac allow`, and a player not on the whitelist is reported as already not allowed. A player listed more than once in `allowedPlayers.json` has every entry removed.
+**Description:** Removes a player from the nether access whitelist, preventing them from creating and using nether portals. The player is looked up the same way as for `/nac allow`, and a player not on the whitelist is answered with `<playerName> is already not allowed to use nether portals.` A player listed more than once in `allowedPlayers.json` has every entry removed. Without a player name, the reply is `Usage: /nac deny (playerName)`. On success, the reply is `<playerName> is no longer allowed to use nether portals.`
 **Permission:** `nac.deny`
 **Usage:** `/nac deny <playerName>`
 **Example:** `/nac deny Steve`
@@ -52,7 +52,7 @@ Each sub-command needs the permission node listed for it; `/nac` on its own need
 
 ### /nac config set \<option\> \<value\>
 
-**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; everything between the first and the last single quote is used, so apostrophes inside the message are kept, and a message with fewer than two single quotes is refused with `New message must be in between single quotes.` Without both an option and a value, the reply is `Usage: /nac config set (option) (value)`. Every other option takes a single word as its value. Option names are case-sensitive and must be spelled as `/nac config show` lists them: `preventportalusage` is refused with `That config option wasn't found.` `usage-reporting.endpoint` and `usage-reporting.key` are not listed by `/nac config show` but can be set the same way, spelled as in [CONFIG.md](CONFIG.md). The new value is written to `config.yml` straight away and takes effect at once.
+**Description:** Sets a configuration option to the specified value. The new text for `denyUsageMessage` and `denyCreationMessage` must be enclosed in single quotes, even when it is one word; everything between the first and the last single quote is used, so apostrophes inside the message are kept, and a message with fewer than two single quotes is refused with `New message must be in between single quotes.` Without both an option and a value, the reply is `Usage: /nac config set (option) (value)`. Every other option takes a single word as its value. Option names are case-sensitive and must be spelled as `/nac config show` lists them: `preventportalusage` is refused with `That config option wasn't found.` `usage-reporting.endpoint` and `usage-reporting.key` are not listed by `/nac config show` but can be set the same way, spelled as in [CONFIG.md](CONFIG.md). `usage-reporting` on its own is a group of options, not an option, and is refused with `That config option wasn't found.`; `version` is refused with `Cannot set version.` A boolean option accepts only `true` or `false`, in any casing; any other value is refused with `'<value>' isn't a valid value for <option>. Accepted values are 'true' and 'false'.` and the current setting is kept. A value that is accepted is answered with `Boolean set.` for a boolean option or `String set.` for any other, is written to `config.yml` straight away and takes effect at once.
 **Permission:** `nac.config`
 **Usage:** `/nac config set <option> <value>`
 **Example:** `/nac config set preventPortalUsage true`
