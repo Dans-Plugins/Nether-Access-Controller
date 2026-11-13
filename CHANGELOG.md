@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- `COMMANDS.md` now gives the replies to `/nac allow` and `/nac deny` with no player name and when they succeed. It also gives the replies `/nac config set` sends when it accepts a value and when it refuses one that is not `true` or `false` for a boolean option, and says that `usage-reporting` on its own and `version` are refused. No plugin behaviour changes.
+- `COMMANDS.md` now gives the replies to `/nac allow` and `/nac deny` with no player name, for a player who is already allowed or already not allowed, and when they succeed. It also gives the replies `/nac config set` sends when it accepts a value and when it refuses one that is not `true` or `false` for a boolean option, and says that `usage-reporting` on its own and `version` are refused. No plugin behaviour changes.
 - The documentation now covers what the code already does in two more places. `COMMANDS.md` now gives the replies to `/nac config` with no sub-command or an unknown one, to `/nac config set` with an option or value missing, and to a deny message not enclosed in single quotes. It also says that `usage-reporting.endpoint` and `usage-reporting.key` can be set even though `/nac config show` does not list them. No plugin behaviour changes.
 - `COMMANDS.md` and `USER_GUIDE.md` now give the reply to a sender who lacks a command's permission node, and say that no usage line follows it. `COMMANDS.md` also says that `/nac` on its own links to the wiki. No plugin behaviour changes.
 
