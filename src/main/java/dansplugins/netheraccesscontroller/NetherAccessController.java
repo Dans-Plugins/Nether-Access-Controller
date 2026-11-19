@@ -7,6 +7,7 @@ import dansplugins.netheraccesscontroller.services.ConfigService;
 import dansplugins.netheraccesscontroller.services.StorageService;
 import dansplugins.netheraccesscontroller.services.UsageReportingService;
 import dansplugins.netheraccesscontroller.trace.TraceClient;
+import dansplugins.netheraccesscontroller.trace.UsageReportingSetting;
 import dansplugins.netheraccesscontroller.utils.ArgumentParser;
 import dansplugins.netheraccesscontroller.utils.EventRegistry;
 import dansplugins.netheraccesscontroller.utils.UUIDChecker;
@@ -15,6 +16,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 /**
  * @author Daniel McCoy Stephenson
@@ -105,6 +108,40 @@ public final class NetherAccessController extends JavaPlugin implements Listener
         } else {
             getLogger().info("Usage reporting is off (" + usageReporting.disabledReason() + ").");
         }
+    }
+
+    /**
+     * Writes the loaded config to config.yml without ever turning usage reporting back on. Every
+     * save goes through here: the defaults written on first run and on upgrade, and
+     * /nac config set. A config.yml Bukkit could not parse was loaded as empty, so saving would
+     * replace the operator's whole file (an opt-out included) with the defaults: it is left alone
+     * and an error is logged. And the loaded config can be older than the file, since an operator
+     * may set usage-reporting.enabled: false by hand while the server runs, so an opt-out on disk
+     * is carried into it first.
+     */
+    @Override
+    public void saveConfig() {
+        if (UsageReportingSetting.prepareToSave(getConfig(), configFile(), getLogger())) {
+            super.saveConfig();
+        }
+    }
+
+    /**
+     * Like {@link #saveConfig()}, but for /nac config set usage-reporting.enabled: the operator has
+     * just chosen the switch, so the value set is written even over an opt-out on disk. A file that
+     * cannot be parsed is still never overwritten.
+     */
+    public void saveConfigWithUsageReportingAsSet() {
+        if (UsageReportingSetting.isUnparseable(configFile())) {
+            getLogger().severe("config.yml could not be read, so it was not overwritten. Fix the YAML error in it "
+                    + "and restart; until then the defaults are used, and usage reporting is off.");
+            return;
+        }
+        super.saveConfig();
+    }
+
+    public File configFile() {
+        return new File(getDataFolder(), "config.yml");
     }
 
     @Override

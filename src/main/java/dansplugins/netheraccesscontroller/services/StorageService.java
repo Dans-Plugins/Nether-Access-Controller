@@ -53,9 +53,9 @@ public class StorageService {
 
     public void save() {
         saveAllowedPlayers();
-        if (configService.hasBeenAltered()) {
-            netherAccessController.saveConfig();
-        }
+        // config.yml is not written here: /nac config set already saved each change, and writing
+        // the loaded config again would undo anything edited by hand while the server was
+        // running -- including usage-reporting.enabled: false.
     }
 
     public void load() {
