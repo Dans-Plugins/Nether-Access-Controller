@@ -86,7 +86,7 @@ denyCreationMessage: "You're unable to create nether portals."
 
 **Type:** boolean
 **Default:** `true`
-**Description:** Whether the plugin reports usage events (see below). Set to `false` to turn it off. Only `true` (or `on`, `yes`) turns it on; any other value turns it off. Once turned off it stays off: the plugin never writes `config.yml` back with reporting on, even if the file was edited while the server was running, and never overwrites a `config.yml` it cannot parse (it logs an error instead, and reporting stays off until the file is fixed). Only `/nac config set usage-reporting.enabled true` turns it back on.
+**Description:** Whether the plugin reports usage events (see below). Set to `false` to turn it off. Only `true` (or `on`, `yes`) turns it on; any other value turns it off. Once turned off it stays off: the plugin never writes `config.yml` back with reporting on, even if the file was edited while the server was running, and never overwrites a `config.yml` it cannot parse (it logs an error instead, and reporting stays off until the file is fixed). Only `/nac config set usage-reporting.enabled true` turns it back on. Other spellings of the block or the switch (`usage_reporting:`, `usageReporting:`, `enable: false`, `disabled: true`), or `usage-reporting: false`, also count as off.
 
 **Example:**
 
