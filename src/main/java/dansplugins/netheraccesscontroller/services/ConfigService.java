@@ -1,10 +1,12 @@
 package dansplugins.netheraccesscontroller.services;
 
 import dansplugins.netheraccesscontroller.NetherAccessController;
+import dansplugins.netheraccesscontroller.trace.UsageReportingSetting;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,8 +40,8 @@ public class ConfigService {
      * them with. No default is registered for them with Bukkit, so its one-argument getBoolean
      * reads a value that is not a boolean (a typo, a quoted "true", a 1) as false. getBoolean reads
      * such a value as the default here instead, so that a bad hand edit cannot turn
-     * preventPortalCreation off (#126). usage-reporting.enabled is not listed: the bundled
-     * config.yml is registered as its default, so a bad value already reads as true.
+     * preventPortalCreation off (#126). usage-reporting.enabled is not listed: it is read by
+     * isUsageReportingEnabled(), which reads any value that is not clearly "on" as off.
      */
     private static final Map<String, Boolean> BOOLEAN_DEFAULTS;
 
@@ -112,8 +114,13 @@ public class ConfigService {
                 sender.sendMessage(ChatColor.GREEN + "String set.");
             }
 
-            // save
-            saveConfig();
+            // save. The usage-reporting switch is written as set, even over an opt-out on disk:
+            // the operator has just chosen it. Every other save keeps an opt-out found on disk.
+            if (option.equals(USAGE_REPORTING_ENABLED_KEY)) {
+                saveConfigWithUsageReportingAsSet();
+            } else {
+                saveConfig();
+            }
             altered = true;
 
             if (option.startsWith(USAGE_REPORTING_SECTION)) {
@@ -176,6 +183,16 @@ public class ConfigService {
      */
     void saveConfig() {
         netherAccessController.saveConfig();
+    }
+
+    /** See NetherAccessController#saveConfigWithUsageReportingAsSet. Package-private like saveConfig. */
+    void saveConfigWithUsageReportingAsSet() {
+        netherAccessController.saveConfigWithUsageReportingAsSet();
+    }
+
+    /** config.yml on disk. Package-private like saveConfig: a test supplies its own file. */
+    File getConfigFile() {
+        return netherAccessController.configFile();
     }
 
     /**
@@ -254,8 +271,14 @@ public class ConfigService {
     // reporting off on every existing installation. Verified against
     // YamlConfiguration, not assumed.
 
+    /**
+     * Fails closed: only a value that clearly means "on" turns reporting on (getBoolean() would read
+     * a quoted "false" as the bundled true), and config.yml as it is on disk right now must allow it
+     * too, so neither a stale loaded copy nor Bukkit's fallback to the defaults for a file it could
+     * not parse can override an opt-out.
+     */
     public boolean isUsageReportingEnabled() {
-        return getConfig().getBoolean(USAGE_REPORTING_ENABLED_KEY);
+        return UsageReportingSetting.isEnabled(getConfig(), getConfigFile());
     }
 
     public String getUsageReportingEndpoint() {

@@ -8,7 +8,7 @@ Option names are case-sensitive in both places.
 
 Options marked below as boolean accept only `true` or `false`, in any casing. Any other value is refused by `/nac config set` and the current setting is kept.
 
-A hand edit of `config.yml` is not refused the same way, but a bad value does not switch an option off. YAML also reads `yes`/`no` and `on`/`off` as booleans. Any other value, such as a typo (`ture`), a quoted `"true"` or `1`, is replaced with the option's default below for `debugMode`, `preventPortalUsage` and `preventPortalCreation`, so `preventPortalCreation` stays on. A warning naming the option, the value found and the default used is logged when the plugin enables. The value in the file is left as it is until it is corrected with `/nac config set` or by editing the file. `/nac config show` lists the value that is in effect. `usage-reporting.enabled` reads such a value as `true`, its bundled default, with no warning.
+A hand edit of `config.yml` is not refused the same way, but a bad value does not switch an option off. YAML also reads `yes`/`no` and `on`/`off` as booleans. Any other value, such as a typo (`ture`), a quoted `"true"` or `1`, is replaced with the option's default below for `debugMode`, `preventPortalUsage` and `preventPortalCreation`, so `preventPortalCreation` stays on. A warning naming the option, the value found and the default used is logged when the plugin enables. The value in the file is left as it is until it is corrected with `/nac config set` or by editing the file. `/nac config show` lists the value that is in effect. `usage-reporting.enabled` reads such a value (anything but `true`, `on` or `yes`, including a quoted `"false"`) as `false`: reporting is off.
 
 ## version
 
@@ -86,7 +86,7 @@ denyCreationMessage: "You're unable to create nether portals."
 
 **Type:** boolean
 **Default:** `true`
-**Description:** Whether the plugin reports usage events (see below). Set to `false` to turn it off.
+**Description:** Whether the plugin reports usage events (see below). Set to `false` to turn it off. Only `true` (or `on`, `yes`) turns it on; any other value turns it off. Once turned off it stays off: the plugin never writes `config.yml` back with reporting on, even if the file was edited while the server was running, and never overwrites a `config.yml` it cannot parse (it logs an error instead, and reporting stays off until the file is fixed). Only `/nac config set usage-reporting.enabled true` turns it back on.
 
 **Example:**
 

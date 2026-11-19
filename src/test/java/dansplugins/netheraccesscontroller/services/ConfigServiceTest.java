@@ -4,7 +4,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -12,6 +14,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -409,6 +413,50 @@ class ConfigServiceTest {
         assertEquals(0, configService.usageReportingApplications);
     }
 
+    /**
+     * An operator who sets enabled: false by hand while the server runs, or writes it quoted, must
+     * find reporting off: the loaded config (still true) must not win over config.yml on disk.
+     */
+    @Test
+    void isUsageReportingEnabled_anOptOutOnDiskWinsOverTheLoadedConfig(@TempDir Path folder) throws Exception {
+        config.setDefaults(bundledConfig());
+        config.set("usage-reporting.enabled", true);
+        configService.configFile = folder.resolve("config.yml").toFile();
+        assertTrue(configService.isUsageReportingEnabled());
+
+        Files.write(configService.configFile.toPath(),
+                "usage-reporting:\n  enabled: \"false\"\n".getBytes(StandardCharsets.UTF_8));
+
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    @Test
+    void isUsageReportingEnabled_aQuotedFalseInTheLoadedConfigIsOff() {
+        config.setDefaults(bundledConfig());
+        config.set("usage-reporting.enabled", "false");
+
+        assertFalse(configService.isUsageReportingEnabled());
+    }
+
+    /**
+     * Every save but one keeps an opt-out found on disk; /nac config set usage-reporting.enabled is
+     * the operator choosing the switch, so it alone is written as set.
+     */
+    @Test
+    void setConfigOption_onlyTheUsageReportingSwitchIsWrittenAsSet() {
+        config.set("usage-reporting.enabled", false);
+        config.set("usage-reporting.key", "abc");
+
+        configService.setConfigOption("usage-reporting.enabled", "true", senderProxy());
+        assertEquals(1, configService.usageReportingSaves);
+        assertTrue(config.getBoolean("usage-reporting.enabled"));
+
+        configService.setConfigOption("preventPortalUsage", "true", senderProxy());
+        configService.setConfigOption("usage-reporting.key", "def", senderProxy());
+        assertEquals(1, configService.usageReportingSaves);
+        assertEquals(3, configService.saves);
+    }
+
     @Test
     void sendConfigList_namesTheUsageReportingSwitch() {
         config.setDefaults(bundledConfig());
@@ -576,6 +624,8 @@ class ConfigServiceTest {
     private static class InMemoryConfigService extends ConfigService {
         private final FileConfiguration config;
         private int saves = 0;
+        private int usageReportingSaves = 0;
+        private File configFile = null;
         private int usageReportingApplications = 0;
         private int savesAtLastApplication = 0;
         private final List<String> warnings = new ArrayList<>();
@@ -594,6 +644,17 @@ class ConfigServiceTest {
         void saveConfig() {
             // There is no file to write to; the assertions read the configuration directly.
             saves++;
+        }
+
+        @Override
+        void saveConfigWithUsageReportingAsSet() {
+            saves++;
+            usageReportingSaves++;
+        }
+
+        @Override
+        File getConfigFile() {
+            return configFile;
         }
 
         @Override
